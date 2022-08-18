@@ -1,3 +1,8 @@
-steadydrivex:
-  accelDeviceAddress: "bla"
-  outputDataRate: 10.0
+steadydrive:
+  OutputDataRateHz: 1
+  MotionSensor:
+    DeviceAddress: S101-CPU01UC-accel
+    SampleRate: 100
+    FullScale: 4
+    HighPassFilter: true
+    BandwidthRatio: 2

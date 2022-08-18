@@ -1,5 +1,5 @@
 /*
-Copyright © 2021 Ci4Rail GmbH <engineering@ci4rail.com>
+Copyright © 2022 Ci4Rail GmbH <engineering@ci4rail.com>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -36,12 +36,11 @@ var rootCmd = &cobra.Command{
 }
 
 func run(cmd *cobra.Command, args []string) {
-
-	_, err := steadydrive.New(viper.Sub("steadydrive"))
+	steadydrive, err := steadydrive.New(viper.Sub("steadydrive"))
 	if err != nil {
 		log.Fatalf("steadydrive: %s", err)
 	}
-
+	steadydrive.Run()
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

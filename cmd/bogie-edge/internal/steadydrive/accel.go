@@ -32,7 +32,7 @@ func outputDataFromAccelerometerValues(samples []*mspb.Sample) *OutputData {
 				data[index] = float64(sample.Z)
 			}
 		}
-		outputData.Max[axis] = signalprocessing.Max(data)
+		outputData.Max[axis] = signalprocessing.Max(data) // TODO: ABS?
 		outputData.RMS[axis] = signalprocessing.RMS(data)
 	}
 	return &outputData

@@ -2,10 +2,11 @@ package steadydrive
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/ci4rail/io4edge-client-go/motionsensor"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
 
@@ -28,13 +29,16 @@ type configuration struct {
 type Instance struct {
 	cfg           *configuration
 	io4edgeClient *motionsensor.Client
+	logger        zerolog.Logger
 }
 
 // New creates a new instance of SteadyDrive
 func New(sub *viper.Viper) (*Instance, error) {
 	var i Instance
 	var err error
-	i.cfg, err = readConfig(sub)
+	i.logger = log.With().Str("component", "foo").Logger()
+
+	i.cfg, err = i.readConfig(sub)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +48,7 @@ func New(sub *viper.Viper) (*Instance, error) {
 	return &i, nil
 }
 
-func readConfig(sub *viper.Viper) (*configuration, error) {
+func (i *Instance) readConfig(sub *viper.Viper) (*configuration, error) {
 	if sub == nil {
 		return nil, fmt.Errorf("missing configuration")
 	}
@@ -53,7 +57,7 @@ func readConfig(sub *viper.Viper) (*configuration, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unmarshal config %s", err)
 	}
-	log.Printf("steadydrive config: %+v\n", cfg)
+	i.logger.Printf("steadydrive config: %+v\n", cfg)
 
 	return &cfg, nil
 }

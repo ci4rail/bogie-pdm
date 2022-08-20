@@ -5,6 +5,9 @@ go 1.18
 require (
 	github.com/ci4rail/io4edge-client-go v1.4.1-0.20220817193607-0df11a8ef27d
 	github.com/ci4rail/io4edge_api v0.11.0
+	github.com/cskr/pubsub v1.0.2
+	github.com/gammazero/deque v0.2.0
+	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
 	github.com/stretchr/testify v1.7.1
@@ -19,6 +22,8 @@ require (
 	github.com/holoplot/go-avahi v1.0.1 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
+	github.com/mattn/go-colorable v0.1.12 // indirect
+	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect

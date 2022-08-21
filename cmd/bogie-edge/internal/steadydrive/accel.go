@@ -2,7 +2,6 @@ package steadydrive
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/ci4rail/io4edge-client-go/functionblock"
@@ -60,7 +59,7 @@ func (s *SteadyDrive) Run() error {
 		for {
 			sd, err := c.ReadStream(time.Second * 2)
 			if err != nil {
-				log.Printf("%s: readStream failed: %v", tag, err)
+				s.logger.Error().Err(err).Msg("readstream failed")
 				continue
 			}
 			samples = append(samples, sd.FSData.GetSamples()...)
@@ -69,6 +68,8 @@ func (s *SteadyDrive) Run() error {
 			}
 		}
 		o := outputDataFromAccelerometerValues(samples)
-		log.Printf("%s: %d samples, %+v\n", tag, len(samples), *o)
+		s.logger.Debug().Msgf("%d samples, %+v", len(samples), *o)
+
+		s.ps.Pub(o, "steadydrive")
 	}
 }

@@ -5,13 +5,10 @@ import (
 	"time"
 
 	"github.com/ci4rail/io4edge-client-go/motionsensor"
+	"github.com/cskr/pubsub"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
-)
-
-const (
-	tag = "steadydrive"
 )
 
 type configuration struct {
@@ -30,22 +27,23 @@ type SteadyDrive struct {
 	cfg           *configuration
 	io4edgeClient *motionsensor.Client
 	logger        zerolog.Logger
+	ps            *pubsub.PubSub
 }
 
 // New creates a new instance of SteadyDrive
-func New(sub *viper.Viper) (*SteadyDrive, error) {
-	var i SteadyDrive
+func New(sub *viper.Viper, ps *pubsub.PubSub) (*SteadyDrive, error) {
+	var s SteadyDrive
 	var err error
-	i.logger = log.With().Str("component", "foo").Logger()
-
-	i.cfg, err = i.readConfig(sub)
+	s.logger = log.With().Str("component", "steadydrive").Logger()
+	s.ps = ps
+	s.cfg, err = s.readConfig(sub)
 	if err != nil {
 		return nil, err
 	}
-	if err := i.configMotionSensor(); err != nil {
+	if err := s.configMotionSensor(); err != nil {
 		return nil, err
 	}
-	return &i, nil
+	return &s, nil
 }
 
 func (s *SteadyDrive) readConfig(sub *viper.Viper) (*configuration, error) {

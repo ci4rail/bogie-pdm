@@ -16,6 +16,14 @@ type configuration struct {
 		Max [3]float64 // vibration must be smaller than this value
 		RMS [3]float64 // vibration must be smaller than this value
 	}
+	Position struct {
+		MinLat   float64 // minimum latitude
+		MaxLat   float64 // maximum latitude
+		MinLon   float64 // minimum longitude
+		MaxLon   float64 // maximum longitude
+		MinSpeed float64 // minimum speed
+		MaxSpeed float64 // maximum speed
+	}
 }
 
 // TriggerUnit is the instance of the TriggerUnit

@@ -3,6 +3,7 @@ package triggerunit
 import (
 	"time"
 
+	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/position"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
 )
 
@@ -31,6 +32,7 @@ const hugeTime = time.Duration(1<<63 - 1)
 
 type inputData struct {
 	steadydrive *steadydrive.OutputData
+	position    *position.OutputData
 }
 
 // Run starts the trigger unit.
@@ -120,7 +122,7 @@ func (t *TriggerUnit) Run() {
 }
 
 func (t *TriggerUnit) isTriggerMet(inputs *inputData) bool {
-	return t.isSteadyDriveOk(inputs.steadydrive)
+	return t.isSteadyDriveOk(inputs.steadydrive) && t.isPositionOk(inputs.position)
 }
 
 func (t *TriggerUnit) isSteadyDriveOk(sd *steadydrive.OutputData) bool {
@@ -136,5 +138,23 @@ func (t *TriggerUnit) isSteadyDriveOk(sd *steadydrive.OutputData) bool {
 			return false
 		}
 	}
+	return true
+}
+
+func (t *TriggerUnit) isPositionOk(p *position.OutputData) bool {
+	if p == nil {
+		return false
+	}
+	if time.Since(p.Timestamp) > time.Second*2 {
+		return false // ignore old data
+	}
+	if p.Lat < t.cfg.Position.MinLat || p.Lat > t.cfg.Position.MaxLat ||
+		p.Lon < t.cfg.Position.MinLon || p.Lon > t.cfg.Position.MaxLon {
+		return false
+	}
+	if p.Speed < t.cfg.Position.MinSpeed || p.Speed > t.cfg.Position.MaxSpeed {
+		return false
+	}
+
 	return true
 }

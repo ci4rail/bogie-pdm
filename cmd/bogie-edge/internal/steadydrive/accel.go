@@ -12,8 +12,9 @@ import (
 
 // OutputData is the output data of the SteadyDrive
 type OutputData struct {
-	Max [3]float64 // x, y, z
-	RMS [3]float64 // x, y, z
+	Timestamp time.Time
+	Max       [3]float64 // x, y, z
+	RMS       [3]float64 // x, y, z
 }
 
 func outputDataFromAccelerometerValues(samples []*mspb.Sample) *OutputData {
@@ -35,13 +36,14 @@ func outputDataFromAccelerometerValues(samples []*mspb.Sample) *OutputData {
 		outputData.Max[axis] = signalprocessing.Max(data) // TODO: ABS?
 		outputData.RMS[axis] = signalprocessing.RMS(data)
 	}
+	outputData.Timestamp = time.Now()
 	return &outputData
 }
 
 // Run runs the SteadyDrive function block
-func (i *Instance) Run() error {
+func (s *SteadyDrive) Run() error {
 
-	c := i.io4edgeClient
+	c := s.io4edgeClient
 	// start stream
 	err := c.StartStream(
 		functionblock.WithBucketSamples(10),
@@ -62,7 +64,7 @@ func (i *Instance) Run() error {
 				continue
 			}
 			samples = append(samples, sd.FSData.GetSamples()...)
-			if time.Since(start) > time.Second/time.Duration(i.cfg.OutputDataRateHz) {
+			if time.Since(start) > time.Second/time.Duration(s.cfg.OutputDataRateHz) {
 				break
 			}
 		}

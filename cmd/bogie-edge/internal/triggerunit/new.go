@@ -18,15 +18,15 @@ type configuration struct {
 	}
 }
 
-// Instance is the instance of the TriggerUnit
-type Instance struct {
+// TriggerUnit is the instance of the TriggerUnit
+type TriggerUnit struct {
 	cfg    *configuration
 	logger zerolog.Logger
 	ps     *pubsub.PubSub
 }
 
 // NewFromViper creates a new TriggerUnit from a viper configuration
-func NewFromViper(viperCfg *viper.Viper, ps *pubsub.PubSub) (*Instance, error) {
+func NewFromViper(viperCfg *viper.Viper, ps *pubsub.PubSub) (*TriggerUnit, error) {
 	cfg, err := readConfig(viperCfg)
 	if err != nil {
 		return nil, err
@@ -35,17 +35,17 @@ func NewFromViper(viperCfg *viper.Viper, ps *pubsub.PubSub) (*Instance, error) {
 }
 
 // New creates a new instance of the TriggerUnit
-func New(cfg *configuration, ps *pubsub.PubSub) *Instance {
+func New(cfg *configuration, ps *pubsub.PubSub) *TriggerUnit {
 
-	i := &Instance{
+	t := &TriggerUnit{
 		ps:     ps,
 		cfg:    cfg,
 		logger: log.With().Str("component", "triggerunit").Logger(),
 	}
 
-	i.logger.Info().Msg(fmt.Sprintf("config: %+v", cfg))
+	t.logger.Info().Msg(fmt.Sprintf("config: %+v", cfg))
 
-	return i
+	return t
 }
 
 func readConfig(sub *viper.Viper) (*configuration, error) {

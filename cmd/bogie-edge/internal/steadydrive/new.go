@@ -25,16 +25,16 @@ type configuration struct {
 	}
 }
 
-// Instance is the instance of the SteadyDrive
-type Instance struct {
+// SteadyDrive is the instance of the SteadyDrive
+type SteadyDrive struct {
 	cfg           *configuration
 	io4edgeClient *motionsensor.Client
 	logger        zerolog.Logger
 }
 
 // New creates a new instance of SteadyDrive
-func New(sub *viper.Viper) (*Instance, error) {
-	var i Instance
+func New(sub *viper.Viper) (*SteadyDrive, error) {
+	var i SteadyDrive
 	var err error
 	i.logger = log.With().Str("component", "foo").Logger()
 
@@ -48,7 +48,7 @@ func New(sub *viper.Viper) (*Instance, error) {
 	return &i, nil
 }
 
-func (i *Instance) readConfig(sub *viper.Viper) (*configuration, error) {
+func (s *SteadyDrive) readConfig(sub *viper.Viper) (*configuration, error) {
 	if sub == nil {
 		return nil, fmt.Errorf("missing configuration")
 	}
@@ -57,25 +57,25 @@ func (i *Instance) readConfig(sub *viper.Viper) (*configuration, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unmarshal config %s", err)
 	}
-	i.logger.Printf("steadydrive config: %+v\n", cfg)
+	s.logger.Printf("steadydrive config: %+v\n", cfg)
 
 	return &cfg, nil
 }
 
-func (i *Instance) configMotionSensor() error {
+func (s *SteadyDrive) configMotionSensor() error {
 	timeout := time.Duration(0)
-	c, err := motionsensor.NewClientFromUniversalAddress(i.cfg.MotionSensor.DeviceAddress, timeout)
+	c, err := motionsensor.NewClientFromUniversalAddress(s.cfg.MotionSensor.DeviceAddress, timeout)
 	if err != nil {
 		return fmt.Errorf("failed to create motionsensor client: %v", err)
 	}
-	i.io4edgeClient = c
+	s.io4edgeClient = c
 
 	// set configuration
 	if err := c.UploadConfiguration(
-		motionsensor.WithSampleRate(uint32(i.cfg.MotionSensor.SampleRate*1000.0)),
-		motionsensor.WithFullScale(i.cfg.MotionSensor.FullScale),
-		motionsensor.WithHighPassFilterEnable(i.cfg.MotionSensor.HighPassFilter),
-		motionsensor.WithBandWidthRatio(i.cfg.MotionSensor.BandwidthRatio)); err != nil {
+		motionsensor.WithSampleRate(uint32(s.cfg.MotionSensor.SampleRate*1000.0)),
+		motionsensor.WithFullScale(s.cfg.MotionSensor.FullScale),
+		motionsensor.WithHighPassFilterEnable(s.cfg.MotionSensor.HighPassFilter),
+		motionsensor.WithBandWidthRatio(s.cfg.MotionSensor.BandwidthRatio)); err != nil {
 		return fmt.Errorf("failed to set motionsensor configuration: %v", err)
 	}
 

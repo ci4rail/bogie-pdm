@@ -17,9 +17,9 @@ limitations under the License.
 package cmd
 
 import (
-	"log"
-
+	"github.com/cskr/pubsub"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -36,9 +36,11 @@ var rootCmd = &cobra.Command{
 }
 
 func run(cmd *cobra.Command, args []string) {
-	steadydrive, err := steadydrive.New(viper.Sub("steadydrive"))
+	ps := pubsub.New(10)
+
+	steadydrive, err := steadydrive.New(viper.Sub("steadydrive"), ps)
 	if err != nil {
-		log.Fatalf("steadydrive: %s", err)
+		log.Fatal().Msgf("steadydrive: %s", err)
 	}
 	steadydrive.Run()
 }
@@ -46,7 +48,7 @@ func run(cmd *cobra.Command, args []string) {
 // Execute adds all child commands to the root command and sets flags appropriately.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		log.Fatalf("Execute Root cmd: %s", err)
+		log.Fatal().Msgf("Execute Root cmd: %s", err)
 	}
 }
 
@@ -64,6 +66,6 @@ func initConfig() {
 	viper.AddConfigPath(".")      // optionally look for config in the working directory
 	err := viper.ReadInConfig()   // Find and read the config file
 	if err != nil {               // Handle errors reading the config file
-		log.Fatalf("fatal error config file: %s", err)
+		log.Fatal().Msgf("fatal error config file: %s", err)
 	}
 }

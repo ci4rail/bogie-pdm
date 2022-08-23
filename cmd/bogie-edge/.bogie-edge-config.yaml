@@ -25,6 +25,6 @@ sensor:
     - S101-IOU01-USB-EXT-1-analogInTypeA1
     - S101-IOU01-USB-EXT-1-analogInTypeA2
     - S101-IOU01-USB-EXT-2-analogInTypeA1
-    - S101-IOU01-USB-EXT-3-analogInTypeA2
+    - S101-IOU01-USB-EXT-2-analogInTypeA2
   SampleRate: 1000
   RingBufEntries: 4000

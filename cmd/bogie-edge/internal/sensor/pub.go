@@ -28,11 +28,15 @@ func (s *Unit) publisher() {
 			select {
 			case tr := <-triggerCh:
 				// received trigger message, publish data
-				s.logger.Debug().Msgf("received trigger %v", tr)
-				s.publish(&aux)
+				o := s.publishData(&aux)
+				s.logger.Debug().Msgf("received trigger %v, published %d bytes", tr, len(o))
+				err := s.nc.PubJs("bogie", o)
+				if err != nil {
+					s.logger.Error().Msgf("can't publish %v", err)
+				}
 
 			case msg := <-inputCh:
-				s.logger.Debug().Msgf("msg %v", msg)
+				//s.logger.Debug().Msgf("msg %v", msg)
 				switch m := msg.(type) {
 				case steadydrive.OutputData:
 					aux.steadydrive = &m
@@ -42,7 +46,7 @@ func (s *Unit) publisher() {
 	}()
 }
 
-func (s *Unit) publish(aux *auxData) {
+func (s *Unit) publishData(aux *auxData) []byte {
 
 	ts := time.Now()
 
@@ -64,11 +68,11 @@ func (s *Unit) publish(aux *auxData) {
 
 	for samplerID, sampler := range s.sampler {
 
+		sampler.rb.Lock()
 		nSamples := sampler.rb.Buf.Len()
 		samples := make([]float32, nSamples)
 		timeDelta := 1 / s.cfg.SampleRate * float64(nSamples)
 
-		sampler.rb.Lock()
 		for i := 0; i < nSamples; i++ {
 			samples[i] = sampler.rb.Buf.At(i)
 		}
@@ -85,5 +89,5 @@ func (s *Unit) publish(aux *auxData) {
 	if err != nil {
 		s.logger.Error().Msgf("can't marshall %v", err)
 	}
-	_ = out
+	return out
 }

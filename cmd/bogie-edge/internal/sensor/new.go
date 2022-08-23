@@ -71,6 +71,7 @@ func readConfig(sub *viper.Viper) (*configuration, error) {
 // Run starts the sensor unit
 // It returns as soon as all go routines are started
 func (s *Unit) Run() error {
+	s.logger.Info().Msg("sensorunit starting")
 
 	// start sensor sampling
 	for i, addr := range s.cfg.DeviceAddress {
@@ -85,6 +86,7 @@ func (s *Unit) Run() error {
 		}
 	}
 	// start publisher
+	s.logger.Info().Msg("about to start publisher")
 	s.publisher()
 
 	return nil

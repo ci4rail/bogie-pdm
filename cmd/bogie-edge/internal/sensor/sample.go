@@ -23,6 +23,8 @@ func (s *samplesRingbuf) Unlock() {
 }
 
 func (s *Unit) sample(deviceAddress string, sampleRate float64, rbEntries int32) (*samplesRingbuf, error) {
+	s.logger.Info().Msgf("%s: sampler starting", deviceAddress)
+
 	// create ringbuf
 	rb := &samplesRingbuf{
 		Buf:   ringbuf.New[float32](int(rbEntries)),

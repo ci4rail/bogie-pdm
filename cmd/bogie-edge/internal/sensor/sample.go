@@ -22,10 +22,10 @@ func (s *samplesRingbuf) Unlock() {
 	s.mutex.Unlock()
 }
 
-func (s *Unit) Sample(deviceAddress string, sampleRate float64) (*samplesRingbuf, error) {
+func (s *Unit) sample(deviceAddress string, sampleRate float64, rbEntries int32) (*samplesRingbuf, error) {
 	// create ringbuf
 	rb := &samplesRingbuf{
-		Buf:   ringbuf.New[float32](int(s.cfg.RingBufEntries)),
+		Buf:   ringbuf.New[float32](int(rbEntries)),
 		mutex: &sync.Mutex{},
 	}
 
@@ -61,9 +61,12 @@ func (s *Unit) Sample(deviceAddress string, sampleRate float64) (*samplesRingbuf
 					continue
 				}
 				samples := sd.FSData.GetSamples()
+				s.logger.Debug().Msgf("read %d samples", len(samples))
 
 				tsLast := uint64(0)
 				periodUS := 1e6 / uint64(sampleRate)
+
+				// copy samples to ringbuf
 				rb.Lock()
 				for i, sample := range samples {
 					if i != 0 {

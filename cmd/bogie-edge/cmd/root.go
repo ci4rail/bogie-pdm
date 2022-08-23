@@ -18,14 +18,22 @@ package cmd
 
 import (
 	"github.com/cskr/pubsub"
+	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/nats"
+	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/sensor"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
+	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/triggerunit"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
+type gloabalConfiguration struct {
+	NatsAddress string
+}
+
 var (
-	cfgFile string
+	cfgFile   string
+	globalCfg gloabalConfiguration
 )
 
 var rootCmd = &cobra.Command{
@@ -38,11 +46,31 @@ var rootCmd = &cobra.Command{
 func run(cmd *cobra.Command, args []string) {
 	ps := pubsub.New(10)
 
+	err := viper.Unmarshal(&globalCfg)
+	if err != nil {
+		log.Fatal().Msgf("unmarshal global config %s", err)
+	}
+
+	natsConn, err := nats.Connect(globalCfg.NatsAddress)
+	if err != nil {
+		log.Fatal().Msgf("nats: %s", err)
+	}
 	steadydrive, err := steadydrive.New(viper.Sub("steadydrive"), ps)
 	if err != nil {
 		log.Fatal().Msgf("steadydrive: %s", err)
 	}
-	steadydrive.Run()
+	triggerunit, err := triggerunit.NewFromViper(viper.Sub("triggerunit"), ps)
+	if err != nil {
+		log.Fatal().Msgf("triggerunit: %s", err)
+	}
+	sensorunit, err := sensor.NewFromViper(viper.Sub("sensor"), ps, natsConn)
+	if err != nil {
+		log.Fatal().Msgf("sensorunit: %s", err)
+	}
+
+	go steadydrive.Run()
+	go triggerunit.Run()
+	sensorunit.Run()
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

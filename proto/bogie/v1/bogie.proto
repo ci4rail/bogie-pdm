@@ -28,7 +28,7 @@ message VibrationSensorSamples {
   // first sample timestamp
   google.protobuf.Timestamp first_sample_ts = 2;
   // sample rate in Hz
-  float sample_rate = 3;
+  double sample_rate = 3;
   // the meaurement samples
   // unit: g
   repeated float samples = 10;
@@ -36,15 +36,15 @@ message VibrationSensorSamples {
 
 message Bogie {
   message SteadyDrive {
-    repeated float max = 1;
-    repeated float rms = 2;
+    repeated double max = 1;
+    repeated double rms = 2;
   }
 
   message Position {
-    float lat = 1;
-    float lon = 2;
-    float alt = 3;
-    float speed = 4;
+    double lat = 1;
+    double lon = 2;
+    double alt = 3;
+    double speed = 4;
   }
 
   // bogie id

@@ -1,3 +1,4 @@
+NatsAddress: "localhost:4222"
 steadydrive:
   OutputDataRateHz: 1
   MotionSensor:
@@ -6,3 +7,24 @@ steadydrive:
     FullScale: 4
     HighPassFilter: true
     BandwidthRatio: 2
+triggerUnit:
+  TriggerDuration: 3
+  HoldOff: 5
+  SteadyDrive:
+    Max: [1, 1, 1]
+    RMS: [1, 1, 1]
+  Position:
+    MinLat: 0
+    MaxLat: 100
+    MinLon: 0
+    MaxLon: 100
+    MinSpeed: 0
+    MaxSpeed: 200
+sensor:
+  DeviceAddress:
+    - S101-IOU01-USB-EXT-1-analogInTypeA1
+    - S101-IOU01-USB-EXT-1-analogInTypeA2
+    - S101-IOU01-USB-EXT-2-analogInTypeA1
+    - S101-IOU01-USB-EXT-3-analogInTypeA2
+  SampleRate: 1000
+  RingBufEntries: 4000

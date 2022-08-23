@@ -17,11 +17,14 @@ limitations under the License.
 package cmd
 
 import (
+	"os"
+
 	"github.com/cskr/pubsub"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/nats"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/sensor"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/triggerunit"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,6 +47,7 @@ var rootCmd = &cobra.Command{
 }
 
 func run(cmd *cobra.Command, args []string) {
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05.999Z07:00"})
 	ps := pubsub.New(10)
 
 	err := viper.Unmarshal(&globalCfg)
@@ -71,6 +75,7 @@ func run(cmd *cobra.Command, args []string) {
 	go steadydrive.Run()
 	go triggerunit.Run()
 	sensorunit.Run()
+	select {}
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

@@ -53,21 +53,20 @@ func (t *TriggerUnit) Run() {
 
 	for {
 		event := none
-		t.logger.Debug().Dur("stateTimer", stateTimer).Msg("")
 		select {
 		case <-time.After(stateTimer):
-			t.logger.Debug().Msg("timer")
+			//t.logger.Debug().Msg("timer")
 			event = timer
 
 		case msg := <-inputCh:
-			t.logger.Debug().Msgf("msg %v", msg)
+			//t.logger.Debug().Msgf("msg %v", msg)
 			switch m := msg.(type) {
 			case steadydrive.OutputData:
 				inputs.steadydrive = &m
 			}
 			event = message
 		case <-initCh:
-			t.logger.Debug().Msg("initCh")
+			//t.logger.Debug().Msg("initCh")
 			event = message
 		}
 
@@ -122,19 +121,22 @@ func (t *TriggerUnit) Run() {
 }
 
 func (t *TriggerUnit) isTriggerMet(inputs *inputData) bool {
-	return t.isSteadyDriveOk(inputs.steadydrive) && t.isPositionOk(inputs.position)
+	return t.isSteadyDriveOk(inputs.steadydrive) // TODO && t.isPositionOk(inputs.position)
 }
 
 func (t *TriggerUnit) isSteadyDriveOk(sd *steadydrive.OutputData) bool {
 	if sd == nil {
+		t.logger.Debug().Msg("steadydrive nil")
 		return false
 	}
 	if time.Since(sd.Timestamp) > time.Second*2 {
+		t.logger.Debug().Msg("steadydrive old")
 		return false // ignore old data
 	}
 
 	for ax := 0; ax < 3; ax++ {
 		if sd.Max[ax] > t.cfg.SteadyDrive.Max[ax] || sd.RMS[ax] > t.cfg.SteadyDrive.RMS[ax] {
+			t.logger.Debug().Msgf("max/rms ax:%d", ax)
 			return false
 		}
 	}

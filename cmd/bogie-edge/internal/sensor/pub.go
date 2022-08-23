@@ -18,6 +18,7 @@ type auxData struct {
 func (s *Unit) publisher() {
 	go func() {
 
+		s.logger.Info().Msgf("publisher running")
 		var aux auxData
 
 		triggerCh := s.ps.Sub("trigger")

@@ -70,6 +70,6 @@ func (s *SteadyDrive) Run() error {
 		o := outputDataFromAccelerometerValues(samples)
 		s.logger.Debug().Msgf("%d samples, %+v", len(samples), *o)
 
-		s.ps.Pub(o, "steadydrive")
+		s.ps.Pub(*o, "steadydrive")
 	}
 }

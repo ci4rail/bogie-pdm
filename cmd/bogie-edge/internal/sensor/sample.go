@@ -61,7 +61,7 @@ func (s *Unit) sample(deviceAddress string, sampleRate float64, rbEntries int32)
 					continue
 				}
 				samples := sd.FSData.GetSamples()
-				s.logger.Debug().Msgf("read %d samples", len(samples))
+				//s.logger.Debug().Msgf("%s: read %d samples", deviceAddress, len(samples))
 
 				tsLast := uint64(0)
 				periodUS := 1e6 / uint64(sampleRate)
@@ -75,6 +75,7 @@ func (s *Unit) sample(deviceAddress string, sampleRate float64, rbEntries int32)
 						}
 					}
 					rb.Buf.Push(float32(sample.Value))
+					tsLast = sample.Timestamp
 				}
 				rb.Unlock()
 			}

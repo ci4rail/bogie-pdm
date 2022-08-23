@@ -40,4 +40,11 @@ message Metrics {
     float hdop = 5;
     float vdop = 6;
   }
+
+  SteadyDrive steady_drive = 1;
+  Position position = 2;
+  Temperature temperature = 3;
+  Internet internet = 4;
+  Cellular cellular = 5;
+  GnssRaw gnss_raw = 6;
 }

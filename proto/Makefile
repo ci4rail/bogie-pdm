@@ -15,5 +15,6 @@ ${SRC_DIR}/go/bogie/v1/bogie.go: ${SRC_DIR}/bogie/v1/bogie.proto prepare
 
 ${SRC_DIR}/python/bogie/v1/bogie_pb2.py: ${SRC_DIR}/bogie/v1/bogie.proto prepare
 	protoc -I=${SRC_DIR} ${SRC_DIR}/bogie/v1/bogie.proto --python_out=python/
+	cp ${SRC_DIR}/python/bogie/v1/bogie_pb2.py  ../export/bogiecsv/
 
 .PHONY: all prepare

@@ -1,9 +1,11 @@
 import os
 import asyncio
 import logging
-import signal
-from nats.aio.client import Client as Nats
+import nats
+from nats.js.api import ConsumerConfig, DeliverPolicy, AckPolicy
 import argparse
+import bogie_pb2
+import csvwrite
 
 tool_description = """
 Tool to export data from the bogie application to csv files.
@@ -11,31 +13,18 @@ Tool to export data from the bogie application to csv files.
 
 # Configurations for network
 EXPORT_SUBJECT = "bogie"
-CONSUMER = "bogiecsv"
+# CONSUMER = "bogiecsv2"
 STREAM_NAME = "test"
 
 
-async def error_cb(e):
-    logging.error(e)
-
-
 async def main(args):
-    nc = Nats()
-    loop = asyncio.get_event_loop()
-
-    # Connect to global nats
-    options = {
-        "servers": [args.server],
-        "ping_interval": 1,
-        "max_outstanding_pings": 5,
-        # "user_credentials": credsfile_path,
-        "error_cb": error_cb,
-        "max_reconnect_attempts": 10,
-    }
+    csvwrite.set_csv_dialect(decimalsep=",")
+    meta_csv = csvwrite.MetaCsv(args.file + "-meta.csv")
+    sensor_csv = csvwrite.SensorCsv(args.file + "-sensor.csv")
 
     logging.info("Connecting to NATS server: %s", args.server)
     try:
-        await nc.connect(**options)
+        nc = await nats.connect(args.server)
     except Exception as e:
         logging.error("Error connecting to NATS server: %s", e)
         return
@@ -43,34 +32,45 @@ async def main(args):
     # Create JetStream context.
     js = nc.jetstream()
 
-    async def cb(msg):
-        global up_to_date
+    config = ConsumerConfig(
+        deliver_policy=DeliverPolicy.BY_START_TIME,
+        opt_start_time="1990-01-01T00:00:00.000000Z",
+        ack_policy=AckPolicy.EXPLICIT,
+        # durable_name=CONSUMER,
+    )
+
+    sub = await js.subscribe(EXPORT_SUBJECT, stream=STREAM_NAME, config=config)
+
+    while True:
+        try:
+            msg = await sub.next_msg(timeout=2.0)
+        except asyncio.TimeoutError:
+            logging.info("Timeout waiting for next message. Stop")
+            break
+
         await msg.ack()
-        logging.info("got data on subject %s: %s", msg.subject, msg.data)
 
-    # Create single push based subscriber that is durable across restarts.
-    await js.subscribe(EXPORT_SUBJECT, durable=CONSUMER, cb=cb, stream=STREAM_NAME)
+        m = decode_message(msg.data)
+        print("got data on subject %s: " % (m))
+        meta_csv.write(m)
+        sensor_csv.write(m.sensor_samples)
 
-    # The following shuts down gracefully when SIGINT or SIGTERM is received
-    stop = {"stop": False}
+    meta_csv.close()
 
-    def signal_handler():
-        stop["stop"] = True
 
-    for sig in ("SIGINT", "SIGTERM"):
-        loop.add_signal_handler(getattr(signal, sig), signal_handler)
-
-    # Fetch and ack messagess from consumer.
-    while not stop["stop"]:
-        await asyncio.sleep(1)
-
-    logging.info("Shutting down...")
+def decode_message(msg):
+    data = bogie_pb2.Bogie()
+    data.ParseFromString(msg)
+    return data
 
 
 def command_line_args_parsing():
     parser = argparse.ArgumentParser(description=tool_description)
     parser.add_argument("server", help="NATS server address (e.g. localhost:4222)")
-    parser.add_argument("file", help="output files prefix, will be extended with sensor.csv and meta.csv")
+    parser.add_argument(
+        "file",
+        help="output files prefix, will be extended with sensor.csv and meta.csv",
+    )
     parser.add_argument(
         "-r",
         "--runtime",

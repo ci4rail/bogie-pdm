@@ -51,6 +51,19 @@ class NatsStream:
         )
 
     @classmethod
+    async def from_seq(cls, server, stream, subject, seq):
+        """
+        Create a new ephemeral NatsStream object that starts from a given sequence.
+        """
+        return await cls.create(
+            server,
+            stream,
+            subject,
+            delivery_policy=DeliverPolicy.BY_START_SEQUENCE,
+            opt_start_seq=seq,
+        )
+
+    @classmethod
     async def from_durable_all(cls, server, stream, subject, durable_name):
         return await cls.create(
             server,

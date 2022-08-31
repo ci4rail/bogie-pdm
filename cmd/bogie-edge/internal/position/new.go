@@ -1,4 +1,4 @@
-package gnss
+package position
 
 import (
 	"fmt"
@@ -10,18 +10,18 @@ import (
 )
 
 type configuration struct {
-	GpsdURL string // e.g. "localhost:2947"
+	MaxGnssAge float64 // if valid gnns data is older than this, report no position (seconds)
 }
 
-// Gnss is the instance of the Gnss
-type Gnss struct {
+// Unit is the instance of the Unit
+type Unit struct {
 	cfg    *configuration
 	logger zerolog.Logger
 	ps     *pubsub.PubSub
 }
 
-// NewFromViper creates a new Gnss Unit from a viper configuration
-func NewFromViper(viperCfg *viper.Viper, ps *pubsub.PubSub) (*Gnss, error) {
+// NewFromViper creates a new PositionUnit from a viper configuration
+func NewFromViper(viperCfg *viper.Viper, ps *pubsub.PubSub) (*Unit, error) {
 	cfg, err := readConfig(viperCfg)
 	if err != nil {
 		return nil, err
@@ -29,17 +29,17 @@ func NewFromViper(viperCfg *viper.Viper, ps *pubsub.PubSub) (*Gnss, error) {
 	return New(cfg, ps), nil
 }
 
-// New creates a new instance of Gnss Unit
-func New(cfg *configuration, ps *pubsub.PubSub) *Gnss {
+// New creates a new instance of PositionUnit
+func New(cfg *configuration, ps *pubsub.PubSub) *Unit {
 
-	g := &Gnss{
+	p := &Unit{
 		ps:     ps,
 		cfg:    cfg,
-		logger: log.With().Str("component", "gnss").Logger(),
+		logger: log.With().Str("component", "position").Logger(),
 	}
 
-	g.logger.Info().Msg(fmt.Sprintf("config: %+v", cfg))
-	return g
+	p.logger.Info().Msg(fmt.Sprintf("config: %+v", cfg))
+	return p
 }
 
 func readConfig(sub *viper.Viper) (*configuration, error) {

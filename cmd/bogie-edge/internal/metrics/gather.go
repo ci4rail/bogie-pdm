@@ -17,7 +17,7 @@ type metricsData struct {
 func (m *Unit) Run() {
 	m.logger.Info().Msg("running")
 
-	inputCh := m.ps.Sub("steadydrive", "position", "cellular", "gnss", "internet", "temperature")
+	inputCh := m.ps.Sub("steadydrive", "position", "cellular", "gnssraw", "internet", "temperature")
 	var metrics metricsData
 
 	for {

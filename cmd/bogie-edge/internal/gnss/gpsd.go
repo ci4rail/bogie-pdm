@@ -19,6 +19,7 @@ type OutputData struct {
 }
 
 // Run runs the Gnss function block
+// no need to run it in a separate goroutine
 func (g *Gnss) Run() error {
 	const connectTimeoutSeconds = 10
 	gpsChan := make(chan *gpsd.Connection)
@@ -40,6 +41,7 @@ func (g *Gnss) Run() error {
 	gpsClient := <-gpsChan
 	var o OutputData
 
+	// send output data whenever gpsd updates TPV data
 	gpsClient.RegisterTpv(func(r interface{}) {
 		tpv := r.(*gpsd.Tpv)
 
@@ -54,6 +56,7 @@ func (g *Gnss) Run() error {
 		g.ps.Pub(o, "gnssraw")
 	})
 
+	// when sky data is available, update number of satellites in output data, but don't send it
 	gpsClient.RegisterSky(func(r interface{}) {
 		sky := r.(*gpsd.Sky)
 		o.NumSats = numSatellites(sky)

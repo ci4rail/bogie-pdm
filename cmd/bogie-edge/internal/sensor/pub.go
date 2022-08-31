@@ -40,6 +40,8 @@ func (s *Unit) publisher() {
 				switch m := msg.(type) {
 				case steadydrive.OutputData:
 					aux.steadydrive = &m
+				case position.OutputData:
+					aux.position = &m
 				}
 			}
 		}
@@ -51,7 +53,7 @@ func (s *Unit) publishData(aux *auxData) []byte {
 	ts := time.Now()
 
 	b := &pb.Bogie{
-		Id:            1,                      // TODO
+		Id:            int32(s.cfg.BogieID),
 		TriggerType:   pb.TriggerType_UNKNOWN, // TODO
 		TriggerTs:     timestamppb.New(ts),
 		SensorSamples: make([]*pb.VibrationSensorSamples, len(s.sampler)),

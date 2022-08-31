@@ -10,7 +10,7 @@ import (
 // OutputData is the output data of the trigger unit.
 // It is published when triggered
 type OutputData struct {
-	// empty
+	TriggerType string // "triggered" or "manual"
 }
 
 type fsmState int
@@ -40,7 +40,7 @@ type inputData struct {
 func (t *TriggerUnit) Run() {
 	t.logger.Info().Msg("running")
 
-	inputCh := t.ps.Sub("steadydrive")
+	inputCh := t.ps.Sub("steadydrive", "position")
 
 	state := wait
 	prevState := state
@@ -63,6 +63,8 @@ func (t *TriggerUnit) Run() {
 			switch m := msg.(type) {
 			case steadydrive.OutputData:
 				inputs.steadydrive = &m
+			case position.OutputData:
+				inputs.position = &m
 			}
 			event = message
 		case <-initCh:
@@ -82,7 +84,7 @@ func (t *TriggerUnit) Run() {
 				t.logger.Debug().Msg("trigger lost")
 			} else if event == timer {
 				if time.Since(stateEntryTime) > time.Duration(t.cfg.TriggerDuration)*time.Second {
-					t.ps.Pub(OutputData{}, "trigger")
+					t.ps.Pub(OutputData{TriggerType: "triggered"}, "trigger")
 					state = holdoff
 					t.logger.Info().Msg("trigger")
 				}
@@ -121,7 +123,7 @@ func (t *TriggerUnit) Run() {
 }
 
 func (t *TriggerUnit) isTriggerMet(inputs *inputData) bool {
-	return t.isSteadyDriveOk(inputs.steadydrive) // TODO && t.isPositionOk(inputs.position)
+	return t.isSteadyDriveOk(inputs.steadydrive) && t.isPositionOk(inputs.position)
 }
 
 func (t *TriggerUnit) isSteadyDriveOk(sd *steadydrive.OutputData) bool {
@@ -149,6 +151,9 @@ func (t *TriggerUnit) isPositionOk(p *position.OutputData) bool {
 	}
 	if time.Since(p.Timestamp) > time.Second*2 {
 		return false // ignore old data
+	}
+	if !p.Valid {
+		return false
 	}
 	if p.Lat < t.cfg.Position.MinLat || p.Lat > t.cfg.Position.MaxLat ||
 		p.Lon < t.cfg.Position.MinLon || p.Lon > t.cfg.Position.MaxLon {

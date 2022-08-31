@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cskr/pubsub"
+	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/position"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -23,6 +24,8 @@ func TestTriggerUnit(t *testing.T) {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05.999Z07:00"})
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	const sdTopic = "steadydrive"
+	const posTopic = "position"
+
 	assert := assert.New(t)
 	ps := pubsub.New(5)
 	cfg := &configuration{
@@ -31,6 +34,12 @@ func TestTriggerUnit(t *testing.T) {
 	}
 	cfg.SteadyDrive.Max = [3]float64{1, 2, 3}
 	cfg.SteadyDrive.RMS = [3]float64{4, 5, 7}
+	cfg.Position.MinLat = -30
+	cfg.Position.MaxLat = 30
+	cfg.Position.MinLon = -120
+	cfg.Position.MaxLon = 120
+	cfg.Position.MinSpeed = 80
+	cfg.Position.MaxSpeed = 100
 
 	tu := New(cfg, ps)
 
@@ -41,11 +50,13 @@ func TestTriggerUnit(t *testing.T) {
 	time.Sleep(time.Millisecond * 100)
 	assert.Empty(ch, "no trigger")
 	ps.Pub(steadydrive.OutputData{Timestamp: time.Now(), Max: [3]float64{4, 4, 4}, RMS: [3]float64{8, 8, 8}}, sdTopic)
+	ps.Pub(position.OutputData{Timestamp: time.Now(), Valid: true, Lat: -10, Lon: -110, Speed: 81}, posTopic)
 	time.Sleep(time.Millisecond * 100)
 	assert.Empty(ch, "no trigger")
 	for i := 0; i < 3; i++ {
 		assert.Empty(ch, "no trigger")
 		ps.Pub(steadydrive.OutputData{Timestamp: time.Now(), Max: [3]float64{1, 1, 1}, RMS: [3]float64{1, 1, 1}}, sdTopic)
+		ps.Pub(position.OutputData{Timestamp: time.Now(), Valid: true, Lat: -10, Lon: -110, Speed: 81}, posTopic)
 		time.Sleep(time.Millisecond * 1000)
 	}
 	// expect initial trigger
@@ -57,6 +68,7 @@ func TestTriggerUnit(t *testing.T) {
 	for i := 0; i < 8; i++ {
 		assert.Empty(ch, "no trigger")
 		ps.Pub(steadydrive.OutputData{Timestamp: time.Now(), Max: [3]float64{1, 1, 1}, RMS: [3]float64{1, 1, 1}}, sdTopic)
+		ps.Pub(position.OutputData{Timestamp: time.Now(), Valid: true, Lat: -10, Lon: -110, Speed: 81}, posTopic)
 		time.Sleep(time.Millisecond * 1000)
 	}
 	time.Sleep(time.Millisecond * 100)

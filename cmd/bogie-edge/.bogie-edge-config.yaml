@@ -7,6 +7,10 @@ steadydrive:
     FullScale: 4
     HighPassFilter: true
     BandwidthRatio: 2
+gnss:
+  GpsdURL: "localhost:2947"
+position:
+  MaxGnssAge: 20
 triggerUnit:
   TriggerDuration: 3
   HoldOff: 5
@@ -21,6 +25,7 @@ triggerUnit:
     MinSpeed: 0
     MaxSpeed: 200
 sensor:
+  BogieID: 1
   DeviceAddress:
     - S101-IOU01-USB-EXT-1-analogInTypeA1
     - S101-IOU01-USB-EXT-1-analogInTypeA2

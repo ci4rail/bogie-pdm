@@ -20,7 +20,9 @@ import (
 	"os"
 
 	"github.com/cskr/pubsub"
+	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/gnss"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/nats"
+	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/position"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/sensor"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/triggerunit"
@@ -63,6 +65,10 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Msgf("steadydrive: %s", err)
 	}
+	positionunit, err := position.NewFromViper(viper.Sub("positionunit"), ps)
+	if err != nil {
+		log.Fatal().Msgf("triggerunit: %s", err)
+	}
 	triggerunit, err := triggerunit.NewFromViper(viper.Sub("triggerunit"), ps)
 	if err != nil {
 		log.Fatal().Msgf("triggerunit: %s", err)
@@ -71,9 +77,15 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Msgf("sensorunit: %s", err)
 	}
+	gnssunit, err := gnss.NewFromViper(viper.Sub("gnss"), ps)
+	if err != nil {
+		log.Fatal().Msgf("gnss: %s", err)
+	}
 
 	go steadydrive.Run()
+	go positionunit.Run()
 	go triggerunit.Run()
+	gnssunit.Run()
 	sensorunit.Run()
 	select {}
 }

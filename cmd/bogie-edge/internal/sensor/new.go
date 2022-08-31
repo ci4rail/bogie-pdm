@@ -11,6 +11,7 @@ import (
 )
 
 type configuration struct {
+	BogieID        int
 	DeviceAddress  []string
 	SampleRate     float64
 	RingBufEntries int32

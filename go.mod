@@ -8,6 +8,7 @@ require (
 	github.com/cskr/pubsub v1.0.2
 	github.com/edgefarm/edgefarm-service-modules v0.0.0-20210728134127-b72f9b1a9a72
 	github.com/gammazero/deque v0.2.0
+	github.com/maltegrosse/go-modemmanager v0.1.0
 	github.com/nats-io/nats.go v1.16.0
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/cobra v1.5.0

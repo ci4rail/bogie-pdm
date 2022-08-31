@@ -24,8 +24,14 @@ def bogie_nats_to_pandas(m):
     df["trigger_time"] = [pb_timestamp_to_local_datetime(data.trigger_ts)]
 
     sensor_df = pd.DataFrame()
+
+    min_len = 1E9
     for sensor in data.sensor_samples:
-        sensor_df["sensor%d" % sensor.sensor_id] = list(sensor.samples)
+        if len(sensor.samples) < min_len:
+            min_len = len(sensor.samples)
+
+    for sensor in data.sensor_samples:
+        sensor_df["sensor%d" % sensor.sensor_id] = list(sensor.samples[0:min_len])
 
     df["sensor_data"] = [sensor_df]
     return df

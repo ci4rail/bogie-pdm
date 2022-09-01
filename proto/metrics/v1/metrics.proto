@@ -17,14 +17,15 @@ option go_package = "metrics/v1";
 
 message Metrics {
   message SteadyDrive {
-    repeated float max = 1;
-    repeated float rms = 2;
+    repeated double max = 1;
+    repeated double rms = 2;
   }
   message Position {
-    float lat = 1;
-    float lon = 2;
-    float alt = 3;
-    float speed = 4;
+    bool valid = 1;
+    float lat = 2;
+    float lon = 3;
+    float alt = 4;
+    float speed = 5;
   }
   message Temperature { float inBox = 1; }
   message Internet { bool connected = 1; }
@@ -36,9 +37,10 @@ message Metrics {
     float lat = 1;
     float lon = 2;
     float alt = 3;
-    int32 satellites = 4;
-    float hdop = 5;
-    float vdop = 6;
+    float speed = 4;
+    float eph = 5;
+    int32 mode = 6;
+    int32 numsats = 7;
   }
 
   SteadyDrive steady_drive = 1;

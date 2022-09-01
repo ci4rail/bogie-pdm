@@ -1,8 +1,8 @@
-all: docker-arm64
+all: container
 VERSION=a1
 
-docker-arm64:
-	docker buildx build --build-arg VER=${VERSION} -f cmd/bogie-edge/Dockerfile \
+container:
+	docker buildx build --build-arg VERSION=${VERSION} -f cmd/bogie-edge/Dockerfile \
 		--platform linux/arm64 --push -t ci4rail/bogie-edge:${VERSION} .
 
-.PHONY: all docker-arm64
+.PHONY: all container

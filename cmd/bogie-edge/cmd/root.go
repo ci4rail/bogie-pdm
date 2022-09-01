@@ -19,6 +19,8 @@ package cmd
 import (
 	"os"
 
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/daprpubsub"
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/export"
 	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/gnss"
 	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/metrics"
 	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/nats"
@@ -34,7 +36,8 @@ import (
 )
 
 type gloabalConfiguration struct {
-	NatsAddress string
+	NatsAddress string // nats address. If set, publish directly to nats. Otherwise, publish to dapr pubsub
+	NetworkName string // edgefarm network name, required for dapr pubsub
 }
 
 var (
@@ -57,10 +60,26 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Msgf("unmarshal global config %s", err)
 	}
+	var exporter export.Exporter
+	if globalCfg.NatsAddress != "" {
+		exporter, err = nats.Connect(globalCfg.NatsAddress)
+		if err != nil {
+			log.Fatal().Msgf("nats: %s", err)
+		}
+	} else {
+		address := os.Getenv("DAPR_GRPC_ADDRESS")
+		if address == "" {
+			log.Fatal().Msg("DAPR_GRPC_ADDRESS not set")
+		}
 
-	natsConn, err := nats.Connect(globalCfg.NatsAddress)
-	if err != nil {
-		log.Fatal().Msgf("nats: %s", err)
+		nodeID := os.Getenv("NODE_NAME")
+		if nodeID == "" {
+			log.Fatal().Msg("NODE_NAME not set")
+		}
+		exporter, err = daprpubsub.New(address, globalCfg.NetworkName, nodeID)
+		if err != nil {
+			log.Fatal().Msgf("dapr pubsub: %s", err)
+		}
 	}
 	steadydrive, err := steadydrive.New(viper.Sub("steadydrive"), ps)
 	if err != nil {
@@ -74,7 +93,7 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Msgf("triggerunit: %s", err)
 	}
-	sensorunit, err := sensor.NewFromViper(viper.Sub("sensor"), ps, natsConn)
+	sensorunit, err := sensor.NewFromViper(viper.Sub("sensor"), ps, exporter)
 	if err != nil {
 		log.Fatal().Msgf("sensorunit: %s", err)
 	}
@@ -82,7 +101,7 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Msgf("gnss: %s", err)
 	}
-	metricsunit, err := metrics.NewFromViper(viper.Sub("metrics"), ps, natsConn)
+	metricsunit, err := metrics.NewFromViper(viper.Sub("metrics"), ps, exporter)
 	if err != nil {
 		log.Fatal().Msgf("metricsunit: %s", err)
 	}

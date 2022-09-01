@@ -30,7 +30,7 @@ func (s *Unit) publisher() {
 				// received trigger message, publish data
 				o := s.publishData(&aux)
 				s.logger.Debug().Msgf("received trigger %v, published %d bytes", tr, len(o))
-				err := s.nc.PubJs("bogie", o)
+				err := s.export.PubExport("bogie", o)
 				if err != nil {
 					s.logger.Error().Msgf("can't publish %v", err)
 				}

@@ -3,7 +3,7 @@ package metrics
 import (
 	"fmt"
 
-	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/nats"
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/export"
 	"github.com/cskr/pubsub"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -19,26 +19,26 @@ type Unit struct {
 	cfg    *configuration
 	logger zerolog.Logger
 	ps     *pubsub.PubSub
-	nc     *nats.Connection
+	export export.Exporter
 }
 
 // NewFromViper creates a new MetricsUnit from a viper configuration
-func NewFromViper(viperCfg *viper.Viper, ps *pubsub.PubSub, nc *nats.Connection) (*Unit, error) {
+func NewFromViper(viperCfg *viper.Viper, ps *pubsub.PubSub, export export.Exporter) (*Unit, error) {
 	cfg, err := readConfig(viperCfg)
 	if err != nil {
 		return nil, err
 	}
-	return New(cfg, ps, nc), nil
+	return New(cfg, ps, export), nil
 }
 
 // New creates a new instance of the MetricsUnit
-func New(cfg *configuration, ps *pubsub.PubSub, nc *nats.Connection) *Unit {
+func New(cfg *configuration, ps *pubsub.PubSub, export export.Exporter) *Unit {
 
 	t := &Unit{
 		ps:     ps,
 		cfg:    cfg,
 		logger: log.With().Str("component", "metrics").Logger(),
-		nc:     nc,
+		export: export,
 	}
 
 	t.logger.Info().Msg(fmt.Sprintf("config: %+v", cfg))

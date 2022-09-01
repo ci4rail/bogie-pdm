@@ -27,8 +27,8 @@ func Connect(address string) (*Connection, error) {
 	}, nil
 }
 
-// PubJs publishes a message to the jetstream subject
-func (c *Connection) PubJs(subject string, data []byte) error {
+// PubExport publishes a message to the jetstream subject
+func (c *Connection) PubExport(subject string, data []byte) error {
 	_, err := c.js.Publish(subject, data)
 	return err
 }

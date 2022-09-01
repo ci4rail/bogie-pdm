@@ -42,7 +42,7 @@ func (m *Unit) Run() {
 			time.Sleep(time.Duration(m.cfg.PublishPeriod) * time.Second)
 			metr.mutex.Lock()
 			o := m.publishData(metr)
-			err := m.nc.PubJs("metrics", o)
+			err := m.export.PubExport("metrics", o)
 			if err != nil {
 				m.logger.Error().Msgf("can't publish %v", err)
 			}

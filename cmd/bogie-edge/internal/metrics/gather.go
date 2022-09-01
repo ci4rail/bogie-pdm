@@ -1,6 +1,7 @@
 package metrics
 
 import (
+	"sync"
 	"time"
 
 	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/gnss"
@@ -11,10 +12,13 @@ import (
 )
 
 type metricsData struct {
+	mutex       *sync.Mutex
 	steadydrive *steadydrive.OutputData
 	position    *position.OutputData
 	modem       *modemData
 	gnssraw     *gnss.OutputData
+	temp        *temperatureData
+	internet    *internetData
 }
 
 // Run starts the metrics unit.
@@ -23,35 +27,52 @@ func (m *Unit) Run() {
 	m.logger.Info().Msg("running")
 
 	inputCh := m.ps.Sub("steadydrive", "position", "cellular", "gnssraw", "internet", "temperature")
-	var metrics metricsData
+	var metr *metricsData = &metricsData{
+		mutex: &sync.Mutex{},
+	}
 
 	// start subunits
 	go m.runModem()
+	go m.runTemperature()
+	go m.runInternet()
 
-	for {
-		select {
-		case <-time.After(time.Duration(m.cfg.PublishPeriod) * time.Second):
-			m.logger.Debug().Msg("publish")
-			m.publishData(metrics)
-
-		case msg := <-inputCh:
-			m.logger.Debug().Msgf("msg %v", msg)
-			switch m := msg.(type) {
-			case *steadydrive.OutputData:
-				metrics.steadydrive = m
-			case *position.OutputData:
-				metrics.position = m
-			case *modemData:
-				metrics.modem = m
-			case *gnss.OutputData:
-				metrics.gnssraw = m
+	// publish go routine
+	go func(metr *metricsData) {
+		for {
+			time.Sleep(time.Duration(m.cfg.PublishPeriod) * time.Second)
+			metr.mutex.Lock()
+			o := m.publishData(metr)
+			err := m.nc.PubJs("metrics", o)
+			if err != nil {
+				m.logger.Error().Msgf("can't publish %v", err)
 			}
+			metr.mutex.Unlock()
 		}
+	}(metr)
+
+	for msg := range inputCh {
+		metr.mutex.Lock()
+		switch m := msg.(type) {
+		case steadydrive.OutputData:
+			metr.steadydrive = &m
+		case position.OutputData:
+			metr.position = &m
+		case modemData:
+			metr.modem = &m
+		case temperatureData:
+			metr.temp = &m
+		case internetData:
+			metr.internet = &m
+		case gnss.OutputData:
+			metr.gnssraw = &m
+		}
+		metr.mutex.Unlock()
+		//m.logger.Debug().Msgf("msg %+v", metr)
 	}
+
 }
 
-func (m *Unit) publishData(metrics metricsData) []byte {
-	m.ps.Pub(metrics, "metrics")
+func (m *Unit) publishData(metrics *metricsData) []byte {
 
 	mpb := &pb.Metrics{}
 	if metrics.steadydrive != nil {
@@ -69,7 +90,17 @@ func (m *Unit) publishData(metrics metricsData) []byte {
 			Speed: float32(metrics.position.Speed),
 		}
 	}
-	// TODO Temperature, Internet
+	if metrics.temp != nil {
+		mpb.Temperature = &pb.Metrics_Temperature{
+			InBox: metrics.temp.Temperature,
+		}
+	}
+	if metrics.internet != nil {
+		mpb.Internet = &pb.Metrics_Internet{
+			Connected: metrics.internet.Connected,
+		}
+	}
+
 	if metrics.modem != nil {
 		mpb.Cellular = &pb.Metrics_Cellular{
 			Operator: metrics.modem.OperatorName,
@@ -87,6 +118,7 @@ func (m *Unit) publishData(metrics metricsData) []byte {
 			Numsats: int32(metrics.gnssraw.NumSats),
 		}
 	}
+	m.logger.Debug().Msgf("publish %+v", mpb)
 
 	out, err := proto.Marshal(mpb)
 	if err != nil {

@@ -27,7 +27,7 @@ func (g *Gnss) Run() error {
 		gpsdHost := g.cfg.GpsdURL
 		for i := 0; i < connectTimeoutSeconds; i++ {
 			if gpsdClient, err := gpsd.NewClient(gpsdHost); err != nil {
-				g.logger.Warn().Msg("Can't connect to gpsd server, reconnecting")
+				g.logger.Warn().Msgf("Can't connect to gpsd server %s %v, reconnecting", gpsdHost, err)
 			} else {
 				g.logger.Info().Msg("connected to gpsd server")
 				gpsChan <- gpsdClient

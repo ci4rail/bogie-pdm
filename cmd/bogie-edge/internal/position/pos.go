@@ -35,7 +35,7 @@ func (p *Unit) Run() {
 	for {
 		select {
 		case <-time.After(time.Second):
-			p.logger.Debug().Msg("timer")
+			//p.logger.Debug().Msg("timer")
 			var o OutputData
 			if inputs.gnssdata != nil {
 				// TODO validate gnss data age

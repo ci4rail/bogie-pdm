@@ -79,15 +79,15 @@ func (t *TriggerUnit) Run() {
 				t.logger.Debug().Msg("trigger met")
 			}
 		case arm:
-			if !t.isTriggerMet(&inputs) {
-				state = wait
-				t.logger.Debug().Msg("trigger lost")
-			} else if event == timer {
+			if event == timer {
 				if time.Since(stateEntryTime) > time.Duration(t.cfg.TriggerDuration)*time.Second {
 					t.ps.Pub(OutputData{TriggerType: "triggered"}, "trigger")
 					state = holdoff
 					t.logger.Info().Msg("trigger")
 				}
+			} else if !t.isTriggerMet(&inputs) {
+				state = wait
+				t.logger.Debug().Msg("trigger lost")
 			}
 		case holdoff:
 			if event == timer {
@@ -137,8 +137,18 @@ func (t *TriggerUnit) isSteadyDriveOk(sd *steadydrive.OutputData) bool {
 	}
 
 	for ax := 0; ax < 3; ax++ {
-		if sd.Max[ax] > t.cfg.SteadyDrive.Max[ax] || sd.RMS[ax] > t.cfg.SteadyDrive.RMS[ax] {
-			t.logger.Debug().Msgf("max/rms ax:%d", ax)
+		if t.cfg.SteadyDrive.CompareType == 0 {
+			if sd.Max[ax] > t.cfg.SteadyDrive.Max[ax] || sd.RMS[ax] > t.cfg.SteadyDrive.RMS[ax] {
+				t.logger.Debug().Msgf("max/rms ax:%d %f %f", ax, sd.Max[ax], sd.RMS[ax])
+				return false
+			}
+		} else if t.cfg.SteadyDrive.CompareType == 1 {
+			if sd.Max[ax] < t.cfg.SteadyDrive.Max[ax] && sd.RMS[ax] < t.cfg.SteadyDrive.RMS[ax] {
+				t.logger.Debug().Msgf("max/rms ax:%d %f %f", ax, sd.Max[ax], sd.RMS[ax])
+				return false
+			}
+		} else {
+			t.logger.Error().Msgf("invalid compare type %d", t.cfg.SteadyDrive.CompareType)
 			return false
 		}
 	}

@@ -13,8 +13,9 @@ type configuration struct {
 	TriggerDuration float64 // time how long the trigger condition must be met until we trigger. In seconds
 	HoldOff         float64 // time how long we wait after trigger before we trigger again. In seconds
 	SteadyDrive     struct {
-		Max [3]float64 // vibration must be smaller than this value
-		RMS [3]float64 // vibration must be smaller than this value
+		CompareType int // 0 = vibration must be smaller than Max/RMS, 1 = vibration must be larger than Max/RMS
+		Max         [3]float64
+		RMS         [3]float64
 	}
 	Position struct {
 		MinLat   float64 // minimum latitude

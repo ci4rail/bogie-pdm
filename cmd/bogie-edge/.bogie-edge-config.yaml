@@ -12,11 +12,12 @@ gnss:
 position:
   MaxGnssAge: 20
 triggerUnit:
-  TriggerDuration: 3
+  TriggerDuration: 0
   HoldOff: 5
   SteadyDrive:
-    Max: [1, 1, 1]
-    RMS: [1, 1, 1]
+    CompareType: 1
+    Max: [0.01, 0.01, 0.01]
+    RMS: [0.01, 0.01, 0.01]
   Position:
     MinLat: 0
     MaxLat: 100
@@ -31,5 +32,7 @@ sensor:
     - S101-IOU01-USB-EXT-1-analogInTypeA2
     - S101-IOU01-USB-EXT-2-analogInTypeA1
     - S101-IOU01-USB-EXT-2-analogInTypeA2
-  SampleRate: 1000
+  SampleRate: 4000
   RingBufEntries: 4000
+metrics:
+  PublishPeriod: 5

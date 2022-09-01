@@ -1,8 +1,6 @@
 package metrics
 
 import (
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/maltegrosse/go-modemmanager"
@@ -16,13 +14,16 @@ type modemData struct {
 func (m *Unit) runModem() {
 	mmgr, err := modemmanager.NewModemManager()
 	if err != nil {
-		log.Fatal(err.Error())
+		m.logger.Error().Err(err).Msg("could not create modem manager")
+		return
 	}
 
 	for {
+		time.Sleep(time.Second * 5)
 		modems, err := mmgr.GetModems()
 		if err != nil {
-			log.Fatal(err.Error())
+			m.logger.Error().Err(err).Msg("get modems")
+			continue
 		}
 		for _, modem := range modems {
 			modem3gpp, err := modem.Get3gpp()
@@ -35,20 +36,17 @@ func (m *Unit) runModem() {
 				m.logger.Error().Err(err).Msg("get operator name")
 				continue
 			}
-			fmt.Println(" - OperatorName: ", opName)
 
-			signalQuality, recent, err := modem.GetSignalQuality()
+			signalQuality, _, err := modem.GetSignalQuality()
 			if err != nil {
 				m.logger.Error().Err(err).Msg("get signal quality")
 				continue
 			}
-			fmt.Println(" - SignalQuality: ", signalQuality, recent)
-			m.ps.Pub(&modemData{
+			m.ps.Pub(modemData{
 				OperatorName:  opName,
 				SignalQuality: float32(signalQuality),
-			})
+			}, "cellular")
 			break // only one modem for now
 		}
-		time.Sleep(time.Second * 5)
 	}
 }

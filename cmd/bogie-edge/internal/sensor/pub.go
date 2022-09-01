@@ -64,9 +64,15 @@ func (s *Unit) publishData(aux *auxData) []byte {
 			Rms: aux.steadydrive.RMS[:],
 		}
 	}
-	// if aux.position != nil {
-	// 	// TODO
-	// }
+
+	if aux.position != nil {
+		b.Position = &pb.Bogie_Position{
+			Lat:   aux.position.Lat,
+			Lon:   aux.position.Lon,
+			Alt:   aux.position.Alt,
+			Speed: aux.position.Speed,
+		}
+	}
 
 	for samplerID, sampler := range s.sampler {
 

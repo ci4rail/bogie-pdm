@@ -4,10 +4,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/gnss"
-	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/position"
-	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
-	pb "github.com/edgefarm/bogie-pdm/proto/go/metrics/v1"
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/gnss"
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/position"
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
+	pb "github.com/ci4rail/bogie-pdm/proto/go/metrics/v1"
 	"google.golang.org/protobuf/proto"
 )
 

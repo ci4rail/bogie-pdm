@@ -3,8 +3,8 @@ package metrics
 import (
 	"fmt"
 
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/nats"
 	"github.com/cskr/pubsub"
-	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/nats"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"

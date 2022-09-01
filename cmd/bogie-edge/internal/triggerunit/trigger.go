@@ -3,8 +3,8 @@ package triggerunit
 import (
 	"time"
 
-	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/position"
-	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/position"
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
 )
 
 // OutputData is the output data of the trigger unit.

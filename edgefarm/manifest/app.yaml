@@ -45,6 +45,3 @@ spec:
                 type: configMap
                 cmName: bogie-config
                 mountPath: /config
-                # items:
-                #   - key: .bogie-edge-config.yaml
-                #     path: /config

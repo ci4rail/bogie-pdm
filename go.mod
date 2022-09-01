@@ -1,4 +1,4 @@
-module github.com/edgefarm/bogie-pdm
+module github.com/ci4rail/bogie-pdm
 
 go 1.18
 

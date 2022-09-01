@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ci4rail/bogie-pdm/pkg/ringbuf"
 	anain "github.com/ci4rail/io4edge-client-go/analogintypea"
 	"github.com/ci4rail/io4edge-client-go/functionblock"
-	"github.com/edgefarm/bogie-pdm/pkg/ringbuf"
 )
 
 type samplesRingbuf struct {

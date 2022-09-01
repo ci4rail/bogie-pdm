@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/ci4rail/bogie-pdm/pkg/signalprocessing"
 	"github.com/ci4rail/io4edge-client-go/functionblock"
 	mspb "github.com/ci4rail/io4edge_api/motionSensor/go/motionSensor/v1"
-	"github.com/edgefarm/bogie-pdm/pkg/signalprocessing"
 )
 
 // OutputData is the output data of the SteadyDrive

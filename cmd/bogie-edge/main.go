@@ -13,7 +13,7 @@ limitations under the License.
 
 package main
 
-import "github.com/edgefarm/bogie-pdm/cmd/bogie-edge/cmd"
+import "github.com/ci4rail/bogie-pdm/cmd/bogie-edge/cmd"
 
 func main() {
 	cmd.Execute()

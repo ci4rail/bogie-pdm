@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/position"
+	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
 	"github.com/cskr/pubsub"
-	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/position"
-	"github.com/edgefarm/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"

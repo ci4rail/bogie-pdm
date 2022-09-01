@@ -33,6 +33,6 @@ sensor:
     - S101-IOU01-USB-EXT-2-analogInTypeA1
     - S101-IOU01-USB-EXT-2-analogInTypeA2
   SampleRate: 4000
-  RingBufEntries: 4000
+  RingBufEntries: 12000
 metrics:
   PublishPeriod: 5

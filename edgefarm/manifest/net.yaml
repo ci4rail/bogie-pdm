@@ -1,0 +1,54 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: bogie-network
+spec:
+  components:
+    - type: application-network
+      name: bogie-network
+      properties:
+        subjects:
+          - name: bogie-subjects
+            subjects:
+              - EXPORT.>
+            stream: export-stream
+          - name: local-subjects
+            subjects:
+              - local.>
+            stream: local-stream
+        streams:
+          - name: export-stream
+            location: node
+            config:
+              storage: file
+              retention: limits
+              maxMsgsPerSubject: -1
+              maxMsgs: -1
+              maxBytes: 1073741824
+              maxAge: 60d
+              maxMsgSize: -1
+              discard: old
+          - name: local-stream
+            location: node
+            config:
+              storage: file
+              retention: limits
+              maxMsgsPerSubject: -1
+              maxMsgs: -1
+              maxBytes: 10000000
+              maxAge: 10d
+              maxMsgSize: -1
+              discard: old
+          - name: export-stream-aggregate
+            location: main
+            link:
+              stream: export-stream
+            config:
+              storage: file
+              retention: limits
+              maxMsgsPerSubject: -1
+              maxMsgs: -1
+              maxBytes: 1073741824
+              maxAge: 60d
+              maxMsgSize: -1
+              discard: old

@@ -1,4 +1,5 @@
-NatsAddress: "localhost:4222"
+#NatsAddress: "localhost:4222"
+NetworkName: bogie-network
 steadydrive:
   OutputDataRateHz: 1
   MotionSensor:
@@ -8,7 +9,7 @@ steadydrive:
     HighPassFilter: true
     BandwidthRatio: 2
 gnss:
-  GpsdURL: "localhost:2947"
+  GpsdURL: "172.17.0.1:2947"
 position:
   MaxGnssAge: 20
 triggerUnit:

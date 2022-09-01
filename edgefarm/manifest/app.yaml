@@ -9,11 +9,12 @@ spec:
       properties:
         runtime:
           - bogie-mc
-        #image: ci4rail/bogie-edge:a1
-        #name: bogie-edge-container
-        image: busybox:1.35.0-glibc
-        name: busybox
-        command: ["sh", "-c", "echo Hello && sleep 3600"]
+        image: ci4rail/bogie-edge:a1
+        name: bogie-edge-container
+        args: ["--config=/config/.bogie-edge-config.yaml"]
+        #image: busybox:1.35.0-glibc
+        #name: busybox
+        #command: ["sh", "-c", "echo Hello && sleep 3600"]
         # securityContext:
         #   priviledged: true
       traits:

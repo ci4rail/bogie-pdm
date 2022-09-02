@@ -76,7 +76,7 @@ func run(cmd *cobra.Command, args []string) {
 		if nodeID == "" {
 			log.Fatal().Msg("NODE_NAME not set")
 		}
-		exporter, err = daprpubsub.New(address, globalCfg.NetworkName, nodeID)
+		exporter, err = daprpubsub.New(address, nodeID, globalCfg.NetworkName)
 		if err != nil {
 			log.Fatal().Msgf("dapr pubsub: %s", err)
 		}

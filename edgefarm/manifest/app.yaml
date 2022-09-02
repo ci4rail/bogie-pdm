@@ -9,14 +9,9 @@ spec:
       properties:
         runtime:
           - bogie-mc
-        image: ci4rail/bogie-edge:a1
+        image: ci4rail/bogie-edge:a2
         name: bogie-edge-container
         args: ["--config=/config/.bogie-edge-config.yaml"]
-        #image: busybox:1.35.0-glibc
-        #name: busybox
-        #command: ["sh", "-c", "echo Hello && sleep 3600"]
-        # securityContext:
-        #   priviledged: true
       traits:
         - type: edge-network-participant
           properties:
@@ -41,6 +36,7 @@ spec:
                 mountPath: /sys/class/thermal
                 readOnly: false
               # Create with k create cm bogie-config --from-file=../../cmd/bogie-edge/.bogie-edge-config.yaml
+              # Update with k create cm bogie-config --from-file=../../cmd/bogie-edge/.bogie-edge-config.yaml --dry-run -o yaml | kubectl replace -f -
               # Configuration is available in container under /config/.bogie-edge-config.yaml
               - name: bogie-config
                 type: configMap

@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 syntax = "proto3";
+import "google/protobuf/timestamp.proto";
 
 package metrics;
 option go_package = "metrics/v1";
@@ -43,10 +44,12 @@ message Metrics {
     int32 numsats = 7;
   }
 
-  SteadyDrive steady_drive = 1;
-  Position position = 2;
-  Temperature temperature = 3;
-  Internet internet = 4;
-  Cellular cellular = 5;
-  GnssRaw gnss_raw = 6;
+  google.protobuf.Timestamp ts = 1;
+
+  SteadyDrive steady_drive = 2;
+  Position position = 3;
+  Temperature temperature = 4;
+  Internet internet = 5;
+  Cellular cellular = 6;
+  GnssRaw gnss_raw = 7;
 }

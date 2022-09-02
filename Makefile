@@ -1,5 +1,5 @@
 all: container
-VERSION=a2
+VERSION=a4
 
 container:
 	docker buildx build --build-arg VERSION=${VERSION} -f cmd/bogie-edge/Dockerfile \

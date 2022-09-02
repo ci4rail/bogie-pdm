@@ -1,6 +1,7 @@
 import asyncio
 import nats
 from nats.js.api import ConsumerConfig, DeliverPolicy, AckPolicy, ReplayPolicy
+import stream.timeconv as timeconv
 
 
 class NatsStream:
@@ -8,6 +9,7 @@ class NatsStream:
     async def create(
         cls,
         server,
+        credsfile_path,
         stream,
         subject,
         durable_name=None,
@@ -17,7 +19,16 @@ class NatsStream:
         replayPolicy=ReplayPolicy.INSTANT,
     ):
         self = NatsStream()
-        nc = await nats.connect(server)
+
+        options = {
+            "servers": [server],
+        }
+
+        if credsfile_path:
+            options["user_credentials"] = credsfile_path
+
+        print("nats options %s" % options)
+        nc = await nats.connect(**options)
 
         # Create JetStream context.
         js = nc.jetstream()
@@ -38,39 +49,36 @@ class NatsStream:
         return self
 
     @classmethod
-    async def from_start_time(cls, server, stream, subject, start_time):
+    async def from_start_time(cls, server, credsfile_path, stream, subject, start_time):
         """
         Create a new ephemeral NatsStream object that starts from a given time.
+        start_time must be a Datetime object in local time
         """
+        start_time = timeconv.localtime_to_utc(start_time)
+        stime = start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        print("start time %s" % stime)
+
         return await cls.create(
             server,
+            credsfile_path,
             stream,
             subject,
             delivery_policy=DeliverPolicy.BY_START_TIME,
-            opt_start_time=start_time,
+            opt_start_time=stime,
         )
 
     @classmethod
-    async def from_seq(cls, server, stream, subject, seq):
+    async def from_seq(cls, server, credsfile_path, stream, subject, seq):
         """
         Create a new ephemeral NatsStream object that starts from a given sequence.
         """
         return await cls.create(
             server,
+            credsfile_path,
             stream,
             subject,
             delivery_policy=DeliverPolicy.BY_START_SEQUENCE,
-            opt_start_seq=seq,
-        )
-
-    @classmethod
-    async def from_durable_all(cls, server, stream, subject, durable_name):
-        return await cls.create(
-            server,
-            stream,
-            subject,
-            durable_name=durable_name,
-            delivery_policy=DeliverPolicy.ALL,
+            opt_start_seq=int(seq),
         )
 
     async def next_msg(self, timeout=2.0):

@@ -9,7 +9,7 @@ spec:
       properties:
         runtime:
           - bogie-mc
-        image: ci4rail/bogie-edge:a2
+        image: ci4rail/bogie-edge:a4
         name: bogie-edge-container
         args: ["--config=/config/.bogie-edge-config.yaml"]
       traits:

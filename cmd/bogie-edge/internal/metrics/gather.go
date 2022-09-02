@@ -9,6 +9,7 @@ import (
 	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/steadydrive"
 	pb "github.com/ci4rail/bogie-pdm/proto/go/metrics/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type metricsData struct {
@@ -42,11 +43,12 @@ func (m *Unit) Run() {
 			time.Sleep(time.Duration(m.cfg.PublishPeriod) * time.Second)
 			metr.mutex.Lock()
 			o := m.publishData(metr)
+			metr.mutex.Unlock()
+
 			err := m.export.PubExport("metrics", o)
 			if err != nil {
 				m.logger.Error().Msgf("can't publish %v", err)
 			}
-			metr.mutex.Unlock()
 		}
 	}(metr)
 
@@ -75,6 +77,8 @@ func (m *Unit) Run() {
 func (m *Unit) publishData(metrics *metricsData) []byte {
 
 	mpb := &pb.Metrics{}
+
+	mpb.Ts = timestamppb.New(time.Now())
 	if metrics.steadydrive != nil {
 		mpb.SteadyDrive = &pb.Metrics_SteadyDrive{
 			Max: metrics.steadydrive.Max[:],

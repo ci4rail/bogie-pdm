@@ -10,7 +10,4 @@ def pb_timestamp_to_local_datetime(pb_timestamp):
 
 
 def localtime_to_utc(localtime):
-    to_zone = tz.tzutc()
-    from_zone = tz.tzlocal()
-    utc = localtime.astimezone(from_zone)
-    return utc.replace(tzinfo=to_zone)
+    return localtime.astimezone(tz.tzutc())

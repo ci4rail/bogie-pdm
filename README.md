@@ -25,3 +25,41 @@ Start bogie app on moducop
 ```
 ./bogie
 ```
+
+
+# Developing with edgefarm
+
+To avoid long docker build time:
+
+Define app manifest so that application will not be started by default:
+```
+  ...
+  components:
+    - name: bogie-edge
+      type: edge-worker
+      properties:
+        runtime:
+          - bogie-mc
+        image: ci4rail/bogie-edge:a4
+        name: bogie-edge-container
+        #args: ["--config=/config/.bogie-edge-config.yaml"]
+        command: ["sh", "-c", "echo Hello && sleep 10000000"]
+```
+
+
+Build static app
+```
+$ make bogie-edge-static && scp bin/bogie-edge-static root@192.168.24.110:~
+```
+
+After applying the manifest:
+
+On edge device
+```
+docker cp bogie-edge-static 84f3e32205d2:/
+```
+
+On devpc:
+```
+/bogie-edge-static --config=/config/.bogie-edge-config.yaml
+```

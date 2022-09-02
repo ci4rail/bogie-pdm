@@ -97,3 +97,9 @@ class NatsStream:
         Acknowledge message.
         """
         await msg.ack()
+
+    async def close(self):
+        """
+        Close connection.
+        """
+        await self.nc.close()

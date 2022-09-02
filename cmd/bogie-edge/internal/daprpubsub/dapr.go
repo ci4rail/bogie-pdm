@@ -34,6 +34,7 @@ func (c *Connection) PubExport(subject string, data []byte) error {
 	ctx := context.Background()
 	subject = fmt.Sprintf("%s.EXPORT.%s", c.nodeID, subject)
 
+	// application/octet-stream is import. Then DAPR will encode payload in base64
 	err := c.client.PublishEvent(ctx, c.networkName, subject, data, dapr.PublishEventWithContentType("application/octet-stream"))
 	return err
 }

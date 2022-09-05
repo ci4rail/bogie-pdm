@@ -31,5 +31,8 @@ def metrics_nats_to_pandas(m):
     df["gnss_speed"] = [data.gnss_raw.speed]
     df["gnss_eph"] = [data.gnss_raw.eph]
     df["gnss_numsats"] = [data.gnss_raw.numsats]
+    df["cellular_strength"] = [data.cellular.strength]
+    df["cellular_operator"] = [data.cellular.operator]
+    df["temperature_inbox"] = [data.temperature.inBox]
 
     return df

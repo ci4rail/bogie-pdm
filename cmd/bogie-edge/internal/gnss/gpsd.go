@@ -48,7 +48,7 @@ func (g *Gnss) Run() error {
 		o.Timestamp = time.Now()
 		o.Lat = tpv.Lat
 		o.Lon = tpv.Lon
-		o.Alt = tpv.Althae
+		o.Alt = tpv.Alt
 		o.Speed = tpv.Speed
 		o.Eph = tpv.Eph
 		o.Mode = tpv.Mode

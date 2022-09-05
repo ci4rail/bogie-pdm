@@ -13,7 +13,7 @@ def metrics_nats_to_pandas(m):
     df["nats_rx_time"] = [m.metadata.timestamp]
     df["seq"] = [m.metadata.sequence.stream]
 
-    print("message data: %s" % m.data)
+    # print("message data: %s" % m.data)
 
     js = json.loads(m.data)
     payload = base64.b64decode(js["data_base64"])  # strip dapr header

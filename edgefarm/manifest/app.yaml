@@ -9,10 +9,10 @@ spec:
       properties:
         runtime:
           - bogie-mc
-        image: ci4rail/bogie-edge:a4
+        image: ci4rail/bogie-edge:a5
         name: bogie-edge-container
-        #args: ["--config=/config/.bogie-edge-config.yaml"]
-        command: ["sh", "-c", "echo Hello && sleep 10000000"]
+        args: ["--config=/config/.bogie-edge-config.yaml"]
+        #command: ["sh", "-c", "echo Hello && sleep 10000000"]
       traits:
         - type: edge-network-participant
           properties:

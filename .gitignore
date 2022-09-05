@@ -19,3 +19,4 @@ exp/
 *.pyc
 *.csv
 __pycache__/
+*.creds

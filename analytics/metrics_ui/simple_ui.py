@@ -16,6 +16,13 @@ def marker_color(value):
 def render_map(df):
     center = (49.44, 11.06)
     map = ipyleaflet.Map(center=center, zoom=10)
+
+    locations = df[["gnss_lat", "gnss_lon"]].dropna().values.tolist()
+    ant_path = ipyleaflet.AntPath(
+        locations=locations, delay=1000, color="#7590ba", pulse_color="#3f6fba"
+    )
+    map.add_layer(ant_path)
+
     return map
 
 

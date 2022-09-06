@@ -39,9 +39,9 @@ def render_lte(lte_out, df):
 def render_acc(acc_out, df):
     with acc_out:
         fig, ax = plt.subplots(figsize=FIG_SIZE)
-        l = ax.plot(df["ts"], df["accel_x_rms"], label="x")
-        l = ax.plot(df["ts"], df["accel_y_rms"], label="y")
-        l = ax.plot(df["ts"], df["accel_z_rms"], label="z")
+        l = ax.plot(df["ts"], df["accel_x_rms"], label="vertical")
+        l = ax.plot(df["ts"], df["accel_y_rms"], label="side")
+        l = ax.plot(df["ts"], df["accel_z_rms"], label="forward")
         ax.set_ylabel("Acceleration [m/s^2]")
         ax.set_xlabel("Time")
         ax.legend()

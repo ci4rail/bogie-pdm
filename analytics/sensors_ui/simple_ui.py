@@ -1,6 +1,7 @@
 import ipywidgets as widgets
 import ipyleaflet
 import matplotlib.pyplot as plt
+import pandas as pd
 
 FIG_SIZE_X = 12
 FIG_SIZE = (FIG_SIZE_X, 2)
@@ -36,6 +37,9 @@ class SensorsUi(widgets.VBox):
         self.idx = change.new
         self.render_sensors(self.dframe.iloc[self.idx])
 
+    def handle_click(self, **kwargs):
+        print(kwargs)
+
     def render_map(self, df):
         center = (49.44, 11.06)
         map = ipyleaflet.Map(center=center, zoom=10)
@@ -46,6 +50,15 @@ class SensorsUi(widgets.VBox):
         )
         map.add_layer(ant_path)
 
+        i = 1
+        for _, row in df.iterrows():
+            if not pd.isna(row["lat"]):
+                marker = ipyleaflet.Marker(
+                    location=(row["lat"], row["lon"]), title=f"Sample {i}"
+                )
+                marker.on_click(self.handle_click)
+                map.add_layer(marker)
+            i += 1
         return map
 
     def render_sensors(self, df):
@@ -57,13 +70,13 @@ class SensorsUi(widgets.VBox):
             )
             # fig, ax = plt.subplots(figsize=FIG_SIZE)
             x = list(range(0, df["sensor_data"].shape[0]))
-            ax1.plot(x, df["sensor_data"]["sensor0"], label="Z rechts")
+            l = ax1.plot(x, df["sensor_data"]["sensor0"], label="Z rechts")
             ax1.legend(loc="upper right")
-            ax2.plot(x, df["sensor_data"]["sensor3"], label="Z links")
+            l = ax2.plot(x, df["sensor_data"]["sensor3"], label="Z links")
             ax2.legend(loc="upper right")
-            ax3.plot(x, df["sensor_data"]["sensor1"], label="Y rechts")
+            l = ax3.plot(x, df["sensor_data"]["sensor1"], label="Y rechts")
             ax3.legend(loc="upper right")
-            ax4.plot(x, df["sensor_data"]["sensor2"], label="X mitte")
+            l = ax4.plot(x, df["sensor_data"]["sensor2"], label="X mitte")
             ax4.legend(loc="upper right")
             ax4.set_ylabel("Acceleration")
             ax4.set_xlabel("Time")

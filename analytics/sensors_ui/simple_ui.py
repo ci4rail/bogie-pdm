@@ -17,21 +17,24 @@ class SensorsUi(widgets.VBox):
             return
 
         self.sensors_out = widgets.Output()
+
         self.map = self.render_map(df)
+        self.num_samples = df.shape[0]
         self.slider = widgets.IntSlider(
             min=0,
-            max=df.shape[0] - 1,
+            max=self.num_samples - 1,
             step=1,
             readout=False,
         )
-        self.render_sensors(self.sensors_out, df.iloc[0])
+        self.idx = 0
+        self.render_sensors(df.iloc[self.idx])
 
         self.slider.observe(self.handle_slider_change, names="value")
         self.children = [self.map, self.slider, self.sensors_out]
 
     def handle_slider_change(self, change):
-        idx = change.new
-        self.render_sensors(self.sensors_out, self.dframe.iloc[idx])
+        self.idx = change.new
+        self.render_sensors(self.dframe.iloc[self.idx])
 
     def render_map(self, df):
         center = (49.44, 11.06)
@@ -45,17 +48,28 @@ class SensorsUi(widgets.VBox):
 
         return map
 
-    def render_sensors(self, out, df):
-        out.outputs = []
-        print("render_sensors %s" % (df["trigger_time"]))
+    def render_sensors(self, df):
+        out = self.sensors_out
         with out:
-            fig, ax = plt.subplots(figsize=FIG_SIZE)
+            out.clear_output(wait=True)
+            fig, (ax1, ax2, ax3, ax4) = plt.subplots(
+                4, sharex=True, figsize=(FIG_SIZE_X, 6)
+            )
+            # fig, ax = plt.subplots(figsize=FIG_SIZE)
             x = list(range(0, df["sensor_data"].shape[0]))
-            for i in range(NUM_SENSORS):
-                l = ax.plot(x, df["sensor_data"]["sensor%d" % i], label="sensor%d" % i)
-            ax.set_ylabel("Acceleration")
-            ax.set_xlabel("Time")
-            ax.legend()
+            ax1.plot(x, df["sensor_data"]["sensor0"], label="Z rechts")
+            ax1.legend(loc="upper right")
+            ax2.plot(x, df["sensor_data"]["sensor3"], label="Z links")
+            ax2.legend(loc="upper right")
+            ax3.plot(x, df["sensor_data"]["sensor1"], label="Y rechts")
+            ax3.legend(loc="upper right")
+            ax4.plot(x, df["sensor_data"]["sensor2"], label="X mitte")
+            ax4.legend(loc="upper right")
+            ax4.set_ylabel("Acceleration")
+            ax4.set_xlabel("Time")
             fig.canvas.header_visible = False
-            # fig.canvas.draw()
+            fig.suptitle(
+                f"Sample {self.idx+1} of {self.num_samples} {df['trigger_time']}",
+                fontsize=16,
+            )
             plt.show(fig)

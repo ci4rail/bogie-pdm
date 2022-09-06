@@ -32,5 +32,5 @@ async def nats_stream_fetch(
         # )
         df = pd.concat([df, df2], axis=0)
         timeout = 0.5
+    await ns.close()
     return df
-

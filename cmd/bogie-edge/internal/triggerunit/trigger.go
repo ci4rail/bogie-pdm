@@ -143,16 +143,16 @@ func (t *TriggerUnit) isSteadyDriveOk(sd *steadydrive.OutputData) bool {
 				return false
 			}
 		} else if t.cfg.SteadyDrive.CompareType == 1 {
-			if sd.Max[ax] < t.cfg.SteadyDrive.Max[ax] && sd.RMS[ax] < t.cfg.SteadyDrive.RMS[ax] {
+			if sd.Max[ax] > t.cfg.SteadyDrive.Max[ax] || sd.RMS[ax] > t.cfg.SteadyDrive.RMS[ax] {
 				t.logger.Debug().Msgf("max/rms ax:%d %f %f", ax, sd.Max[ax], sd.RMS[ax])
-				return false
+				return true
 			}
 		} else {
 			t.logger.Error().Msgf("invalid compare type %d", t.cfg.SteadyDrive.CompareType)
 			return false
 		}
 	}
-	return true
+	return t.cfg.SteadyDrive.CompareType == 0
 }
 
 func (t *TriggerUnit) isPositionOk(p *position.OutputData) bool {

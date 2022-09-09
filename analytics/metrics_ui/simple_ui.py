@@ -15,6 +15,9 @@ def make_color(value):
 
 
 def make_geojson(locations):
+    """
+    locations: list of [lat, lon, value]
+    """
     features = []
     for i in range(len(locations)):
         if i != 0:
@@ -74,11 +77,29 @@ class MetricsUi(widgets.VBox):
         self.map = map
         self.map_overlay = None
 
-        self.render_lte_on_map()
+        self.tab_change(0)
         self.children = [map, tab]
 
     def handle_tab_change(self, change):
-        print("tab change", change.new)
+        self.tab_change(change.new)
+
+    def tab_change(self, tabnum):
+        if self.map_overlay is not None:
+            self.map.remove(self.map_overlay)
+            self.map_overlay = None
+
+        l = None
+        if tabnum == 0:
+            l = self.lte_strength_layer_for_map()
+        # elif tabnum == 1:
+        #     self.render_acc_on_map()
+        elif tabnum == 2:
+            l = self.gnss_accuracy_layer_for_map()
+        # elif tabnum == 3:
+        #     self.render_temp_on_map()
+        if l is not None:
+            self.map.add_layer(l)
+            self.map_overlay = l
 
     def render_map(self, df):
         center = (49.44, 11.06)
@@ -141,17 +162,34 @@ class MetricsUi(widgets.VBox):
             fig.canvas.header_visible = False
             plt.show(fig)
 
-    def render_lte_on_map(self):
+    def lte_strength_layer_for_map(self):
         locations = self.dframe[
             ["gnss_lat", "gnss_lon", "cellular_strength"]
         ].values.tolist()
         g = ipyleaflet.GeoJSON(
             data=make_geojson(locations),
-            style={"opacity": 1, "weight": 10},
+            style={"opacity": 0.8, "weight": 5},
             style_callback=self.style_callback_lte,
         )
-        self.map_overlay = g
-        self.map.add_layer(g)
+        return g
 
     def style_callback_lte(self, feature):
         return {"color": make_color(feature["properties"]["value"])}
+
+    def gnss_accuracy_layer_for_map(self):
+        locations = self.dframe[
+            ["gnss_lat", "gnss_lon", "gnss_eph"]
+        ].values.tolist()
+        g = ipyleaflet.GeoJSON(
+            data=make_geojson(locations),
+            style={"opacity": 0.5, "weight": 3},
+            style_callback=self.style_callback_gnss,
+        )
+        return g
+
+    def style_callback_gnss(self, feature):
+        accuracy = feature["properties"]["value"]
+        percent = 100 - (accuracy * 10)
+        if percent < 0:
+            percent = 0
+        return {"color": make_color(percent)}

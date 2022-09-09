@@ -30,7 +30,9 @@ async def nats_stream_fetch(
         # print(
         #     "loaded time %s seq %d" % (df2.iloc[0]["nats_rx_time"], df2.iloc[0]["seq"])
         # )
-        df = pd.concat([df, df2], axis=0)
+        if df2["trigger_time"].iloc[0] >= start_time:
+            df = pd.concat([df, df2], axis=0)
+
         timeout = 0.5
     await ns.close()
     return df

@@ -5,7 +5,6 @@ from dateutil import tz
 import datetime
 
 
-
 async def nats_stream_fetch(
     server, nats_creds, stream_name, export_subject, start_time, end_time
 ):
@@ -31,7 +30,9 @@ async def nats_stream_fetch(
         # print(
         #     "loaded time %s seq %d" % (df2.iloc[0]["nats_rx_time"], df2.iloc[0]["seq"])
         # )
-        df = pd.concat([df, df2], axis=0)
+        if df2["ts"].iloc[0] >= start_time:
+            df = pd.concat([df, df2], axis=0)
+
         timeout = 0.5
     return df
 

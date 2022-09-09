@@ -65,24 +65,25 @@ class SensorsUi(widgets.VBox):
         out = self.sensors_out
         with out:
             out.clear_output(wait=True)
-            fig, (ax1, ax2, ax3, ax4) = plt.subplots(
-                4, sharex=True, figsize=(FIG_SIZE_X, 6)
+            fig, (ax1, ax3, ax4) = plt.subplots(
+                3, sharex=True, sharey=True, figsize=(FIG_SIZE_X, 6)
             )
             # fig, ax = plt.subplots(figsize=FIG_SIZE)
             x = list(range(0, df["sensor_data"].shape[0]))
-            l = ax1.plot(x, df["sensor_data"]["sensor0"], label="Z rechts")
+            l = ax1.plot(x, df["sensor_data"]["sensor0"], label="Z", color="blue")
             ax1.legend(loc="upper right")
-            l = ax2.plot(x, df["sensor_data"]["sensor3"], label="Z links")
-            ax2.legend(loc="upper right")
-            l = ax3.plot(x, df["sensor_data"]["sensor1"], label="Y rechts")
+            # l = ax2.plot(x, df["sensor_data"]["sensor3"], label="Z links")
+            # ax2.legend(loc="upper right")
+            l = ax3.plot(x, df["sensor_data"]["sensor1"], label="Y", color="orange")
             ax3.legend(loc="upper right")
-            l = ax4.plot(x, df["sensor_data"]["sensor2"], label="X mitte")
+            l = ax4.plot(x, df["sensor_data"]["sensor2"], label="X", color="green")
             ax4.legend(loc="upper right")
             ax4.set_ylabel("Acceleration")
             ax4.set_xlabel("Time")
             fig.canvas.header_visible = False
+            timestr = df["trigger_time"].strftime("%Y-%m-%d %H:%M:%S")
             fig.suptitle(
-                f"Sample {self.idx+1} of {self.num_samples} {df['trigger_time']}",
+                f"Sample {self.idx+1} of {self.num_samples}, recorded {timestr}",
                 fontsize=16,
             )
             plt.show(fig)

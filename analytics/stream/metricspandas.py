@@ -28,14 +28,15 @@ def metrics_nats_to_pandas(m):
     df["accel_y_max"] = [data.steady_drive.max[1]]
     df["accel_z_max"] = [data.steady_drive.max[2]]
     df["gnss_mode"] = [data.gnss_raw.mode]
-    df["gnss_lat"] = [data.gnss_raw.lat]
-    df["gnss_lon"] = [data.gnss_raw.lon]
-    df["gnss_alt"] = [data.gnss_raw.alt]
-    df["gnss_speed"] = [data.gnss_raw.speed]
-    df["gnss_eph"] = [data.gnss_raw.eph]
+    if df["gnss_mode"].iloc[0] > 1:
+        df["gnss_lat"] = [data.gnss_raw.lat]
+        df["gnss_lon"] = [data.gnss_raw.lon]
+        df["gnss_alt"] = [data.gnss_raw.alt]
+        df["gnss_speed"] = [data.gnss_raw.speed]
+        df["gnss_eph"] = [data.gnss_raw.eph]
     df["gnss_numsats"] = [data.gnss_raw.numsats]
     df["cellular_strength"] = [data.cellular.strength]
     df["cellular_operator"] = [data.cellular.operator]
     df["temperature_inbox"] = [data.temperature.inBox]
-
+    df["internet_connected"] = [data.internet.connected]
     return df

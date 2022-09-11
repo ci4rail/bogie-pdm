@@ -34,9 +34,16 @@ def bogie_nats_to_pandas(m):
     df["sensor_data"] = [sensor_df]
 
     df["bogie_id"] = [data.id]
-    df["lat"] = [data.position.lat]
-    df["lon"] = [data.position.lon]
-    df["alt"] = [data.position.alt]
-    df["speed"] = [data.position.speed]
+    try:
+        has_invalid = data.HasField("invalid")
+    except ValueError:
+        has_invalid = False
+    if not has_invalid:
+        df["invalid"] = [False]
+    if not df["invalid"].iloc[0]:
+        df["lat"] = [data.position.lat]
+        df["lon"] = [data.position.lon]
+        df["alt"] = [data.position.alt]
+        df["speed"] = [data.position.speed]
 
     return df

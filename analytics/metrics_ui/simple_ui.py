@@ -1,6 +1,7 @@
 import ipywidgets as widgets
 import ipyleaflet
 import matplotlib.pyplot as plt
+import datetime
 from colour import Color
 
 FIG_SIZE_X = 12
@@ -16,7 +17,7 @@ def make_color(value):
 
 def make_geojson(locations):
     """
-    locations: list of [lat, lon, value]
+    locations: list of [ts, lat, lon, value]
     """
     features = []
     for i in range(len(locations)):
@@ -30,11 +31,11 @@ def make_geojson(locations):
                     "geometry": {
                         "type": "LineString",
                         "coordinates": [
-                            [prev_loc[1], prev_loc[0]],
-                            [this_loc[1], this_loc[0]],
+                            [prev_loc[2], prev_loc[1]],
+                            [this_loc[2], this_loc[1]],
                         ],
                     },
-                    "properties": {"value": this_loc[2]},
+                    "properties": {"value": this_loc[3], "ts": this_loc[0]},
                 }
             )
     return {"type": "FeatureCollection", "features": features}
@@ -77,6 +78,16 @@ class MetricsUi(widgets.VBox):
         self.map = map
         self.map_overlay = None
 
+        # add hover tooltips
+        self.tooltip_html = widgets.HTML(value="")
+        self.tooltip_html.layout.margin = "0px 20px 20px 20px"
+        self.tooltip_html.layout.visibility = "visible"
+        # create widget for hover tooltips
+        self.hover_control = ipyleaflet.WidgetControl(
+            widget=self.tooltip_html, position="bottomright"
+        )
+        self.map.add_control(self.hover_control)
+
         self.tab_change(0)
         self.children = [map, tab]
 
@@ -103,7 +114,7 @@ class MetricsUi(widgets.VBox):
 
     def render_map(self, df):
         center = (49.44, 11.06)
-        map = ipyleaflet.Map(center=center, zoom=10)
+        map = ipyleaflet.Map(center=center, zoom=12)
 
         locations = df[["gnss_lat", "gnss_lon"]].dropna().values.tolist()
         ant_path = ipyleaflet.AntPath(
@@ -164,13 +175,17 @@ class MetricsUi(widgets.VBox):
 
     def lte_strength_layer_for_map(self):
         locations = self.dframe[
-            ["gnss_lat", "gnss_lon", "cellular_strength"]
-        ].values.tolist()
+            ["ts", "gnss_lat", "gnss_lon", "cellular_strength"]
+        ].dropna().values.tolist()
+
+        print(type(locations[0][0]), type(locations[0][1]))
+
         g = ipyleaflet.GeoJSON(
             data=make_geojson(locations),
             style={"opacity": 0.8, "weight": 5},
             style_callback=self.style_callback_lte,
         )
+        g.on_hover(self.overlay_on_hover)
         return g
 
     def style_callback_lte(self, feature):
@@ -178,13 +193,14 @@ class MetricsUi(widgets.VBox):
 
     def gnss_accuracy_layer_for_map(self):
         locations = self.dframe[
-            ["gnss_lat", "gnss_lon", "gnss_eph"]
-        ].values.tolist()
+            ["ts", "gnss_lat", "gnss_lon", "gnss_eph"]
+        ].dropna().values.tolist()
         g = ipyleaflet.GeoJSON(
             data=make_geojson(locations),
-            style={"opacity": 0.5, "weight": 3},
+            style={"opacity": 0.8, "weight": 5},
             style_callback=self.style_callback_gnss,
         )
+        g.on_hover(self.overlay_on_hover)
         return g
 
     def style_callback_gnss(self, feature):
@@ -193,3 +209,12 @@ class MetricsUi(widgets.VBox):
         if percent < 0:
             percent = 0
         return {"color": make_color(percent)}
+
+    def overlay_on_hover(self, feature, **kwargs):
+        ts = datetime.datetime.fromisoformat(feature["properties"]["ts"])
+        timestr = ts.strftime("%H:%M:%S")
+
+        self.tooltip_html.value = (
+            f"{timestr} - {feature['properties']['value']}"
+        )
+        self.tooltip_html.layout.visibility = "visible"

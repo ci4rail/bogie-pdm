@@ -174,11 +174,11 @@ class MetricsUi(widgets.VBox):
             plt.show(fig)
 
     def lte_strength_layer_for_map(self):
-        locations = self.dframe[
-            ["ts", "gnss_lat", "gnss_lon", "cellular_strength"]
-        ].dropna().values.tolist()
-
-        print(type(locations[0][0]), type(locations[0][1]))
+        locations = (
+            self.dframe[["ts", "gnss_lat", "gnss_lon", "cellular_strength"]]
+            .dropna()
+            .values.tolist()
+        )
 
         g = ipyleaflet.GeoJSON(
             data=make_geojson(locations),
@@ -192,9 +192,11 @@ class MetricsUi(widgets.VBox):
         return {"color": make_color(feature["properties"]["value"])}
 
     def gnss_accuracy_layer_for_map(self):
-        locations = self.dframe[
-            ["ts", "gnss_lat", "gnss_lon", "gnss_eph"]
-        ].dropna().values.tolist()
+        locations = (
+            self.dframe[["ts", "gnss_lat", "gnss_lon", "gnss_eph"]]
+            .dropna()
+            .values.tolist()
+        )
         g = ipyleaflet.GeoJSON(
             data=make_geojson(locations),
             style={"opacity": 0.8, "weight": 5},
@@ -214,7 +216,5 @@ class MetricsUi(widgets.VBox):
         ts = datetime.datetime.fromisoformat(feature["properties"]["ts"])
         timestr = ts.strftime("%H:%M:%S")
 
-        self.tooltip_html.value = (
-            f"{timestr} - {feature['properties']['value']}"
-        )
+        self.tooltip_html.value = f"{timestr} - {feature['properties']['value']}"
         self.tooltip_html.layout.visibility = "visible"

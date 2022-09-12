@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\010bogie/v1',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x14\x62ogie/v1/bogie.proto\x12\x05\x62ogie\x1a\x1fgoogle/protobuf/timestamp.proto\"\x86\x01\n\x16VibrationSensorSamples\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12\x33\n\x0f\x66irst_sample_ts\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x13\n\x0bsample_rate\x18\x03 \x01(\x01\x12\x0f\n\x07samples\x18\n \x03(\x02\"\xe8\x02\n\x05\x42ogie\x12\n\n\x02id\x18\x01 \x01(\x05\x12(\n\x0ctrigger_type\x18\x02 \x01(\x0e\x32\x12.bogie.TriggerType\x12.\n\ntrigger_ts\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\x0csteady_drive\x18\x04 \x01(\x0b\x32\x18.bogie.Bogie.SteadyDrive\x12\'\n\x08position\x18\x05 \x01(\x0b\x32\x15.bogie.Bogie.Position\x12\x35\n\x0esensor_samples\x18\n \x03(\x0b\x32\x1d.bogie.VibrationSensorSamples\x1a\'\n\x0bSteadyDrive\x12\x0b\n\x03max\x18\x01 \x03(\x01\x12\x0b\n\x03rms\x18\x02 \x03(\x01\x1a@\n\x08Position\x12\x0b\n\x03lat\x18\x01 \x01(\x01\x12\x0b\n\x03lon\x18\x02 \x01(\x01\x12\x0b\n\x03\x61lt\x18\x03 \x01(\x01\x12\r\n\x05speed\x18\x04 \x01(\x01*A\n\x0bTriggerType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\n\n\x06MANUAL\x10\x01\x12\x19\n\x15TRIGGER_CONDITION_MET\x10\x02\x42\nZ\x08\x62ogie/v1b\x06proto3'
+  serialized_pb=b'\n\x14\x62ogie/v1/bogie.proto\x12\x05\x62ogie\x1a\x1fgoogle/protobuf/timestamp.proto\"\x86\x01\n\x16VibrationSensorSamples\x12\x11\n\tsensor_id\x18\x01 \x01(\x05\x12\x33\n\x0f\x66irst_sample_ts\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x13\n\x0bsample_rate\x18\x03 \x01(\x01\x12\x0f\n\x07samples\x18\n \x03(\x02\"\xf9\x02\n\x05\x42ogie\x12\n\n\x02id\x18\x01 \x01(\x05\x12(\n\x0ctrigger_type\x18\x02 \x01(\x0e\x32\x12.bogie.TriggerType\x12.\n\ntrigger_ts\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12.\n\x0csteady_drive\x18\x04 \x01(\x0b\x32\x18.bogie.Bogie.SteadyDrive\x12\'\n\x08position\x18\x05 \x01(\x0b\x32\x15.bogie.Bogie.Position\x12\x35\n\x0esensor_samples\x18\n \x03(\x0b\x32\x1d.bogie.VibrationSensorSamples\x1a\'\n\x0bSteadyDrive\x12\x0b\n\x03max\x18\x01 \x03(\x01\x12\x0b\n\x03rms\x18\x02 \x03(\x01\x1aQ\n\x08Position\x12\x0b\n\x03lat\x18\x01 \x01(\x01\x12\x0b\n\x03lon\x18\x02 \x01(\x01\x12\x0b\n\x03\x61lt\x18\x03 \x01(\x01\x12\r\n\x05speed\x18\x04 \x01(\x01\x12\x0f\n\x07invalid\x18\x05 \x01(\x08*A\n\x0bTriggerType\x12\x0b\n\x07UNKNOWN\x10\x00\x12\n\n\x06MANUAL\x10\x01\x12\x19\n\x15TRIGGER_CONDITION_MET\x10\x02\x42\nZ\x08\x62ogie/v1b\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
 
@@ -50,8 +50,8 @@ _TRIGGERTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=564,
-  serialized_end=629,
+  serialized_start=581,
+  serialized_end=646,
 )
 _sym_db.RegisterEnumDescriptor(_TRIGGERTYPE)
 
@@ -189,6 +189,13 @@ _BOGIE_POSITION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='invalid', full_name='bogie.Bogie.Position.invalid', index=4,
+      number=5, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -202,7 +209,7 @@ _BOGIE_POSITION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=498,
-  serialized_end=562,
+  serialized_end=579,
 )
 
 _BOGIE = _descriptor.Descriptor(
@@ -268,7 +275,7 @@ _BOGIE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=202,
-  serialized_end=562,
+  serialized_end=579,
 )
 
 _VIBRATIONSENSORSAMPLES.fields_by_name['first_sample_ts'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP

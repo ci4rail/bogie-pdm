@@ -14,11 +14,13 @@ position:
   MaxGnssAge: 20
 triggerUnit:
   TriggerDuration: 0
-  HoldOff: 5
+  HoldOff: 10
   SteadyDrive:
+    # Trigger when any of the measured values are above the configured thresholds
     CompareType: 1
-    Max: [0.01, 0.01, 0.01]
-    RMS: [0.01, 0.01, 0.01]
+    # Vertical, side, forward
+    Max: [0.15, 0.05, 0.05]
+    RMS: [20, 20, 20]
   Position:
     MinLat: 0
     MaxLat: 100
@@ -33,7 +35,7 @@ sensor:
     - S101-IOU01-USB-EXT-1-analogInTypeA2
     - S101-IOU01-USB-EXT-2-analogInTypeA1
     - S101-IOU01-USB-EXT-2-analogInTypeA2
-  SampleRate: 4000
-  RingBufEntries: 12000
+  SampleRate: 1000
+  RingBufEntries: 4000
 metrics:
-  PublishPeriod: 5
+  PublishPeriod: 2

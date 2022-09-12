@@ -45,6 +45,7 @@ message Bogie {
     double lon = 2;
     double alt = 3;
     double speed = 4;
+    bool invalid = 5;
   }
 
   // bogie id

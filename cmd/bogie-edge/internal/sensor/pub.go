@@ -67,10 +67,11 @@ func (s *Unit) publishData(aux *auxData) []byte {
 
 	if aux.position != nil {
 		b.Position = &pb.Bogie_Position{
-			Lat:   aux.position.Lat,
-			Lon:   aux.position.Lon,
-			Alt:   aux.position.Alt,
-			Speed: aux.position.Speed,
+			Lat:     aux.position.Lat,
+			Lon:     aux.position.Lon,
+			Alt:     aux.position.Alt,
+			Speed:   aux.position.Speed,
+			Invalid: !aux.position.Valid,
 		}
 	}
 

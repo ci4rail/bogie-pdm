@@ -9,7 +9,7 @@ spec:
       properties:
         runtime:
           - bogie-mc
-        image: ci4rail/bogie-edge:a5
+        image: ci4rail/bogie-edge:a6
         name: bogie-edge-container
         args: ["--config=/config/.bogie-edge-config.yaml"]
         #command: ["sh", "-c", "echo Hello && sleep 10000000"]
@@ -41,5 +41,5 @@ spec:
               # Configuration is available in container under /config/.bogie-edge-config.yaml
               - name: bogie-config
                 type: configMap
-                cmName: bogie-config
+                cmName: bogie-config3
                 mountPath: /config

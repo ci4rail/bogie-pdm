@@ -1,5 +1,5 @@
 all: container
-VERSION=a5
+VERSION=a6
 GO_LDFLAGS = -tags 'netgo osusergo static_build' -ldflags "-X github.com/ci4rail/bogie-pdm/internal/version.Version=${VERSION}"
 
 container:

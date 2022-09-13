@@ -1,0 +1,5 @@
+SERVER="nats://dbs001.edgefarm.dev:4222"
+EXPORT_SUBJECT_METRICS = "agilis-mc-1.EXPORT.metrics"
+EXPORT_SUBJECT_SENSORS = "agilis-mc-1.EXPORT.bogie"
+STREAM_NAME = "bogie-network_export-stream-aggregate"
+NATS_CREDS = "user.creds"

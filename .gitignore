@@ -21,3 +21,5 @@ exp/
 __pycache__/
 *.creds
 *-checkpoint*
+*.ipynb_checkpoints/
+analytics/data/

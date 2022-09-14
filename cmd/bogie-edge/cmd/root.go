@@ -81,9 +81,14 @@ func run(cmd *cobra.Command, args []string) {
 			log.Fatal().Msgf("dapr pubsub: %s", err)
 		}
 	}
-	steadydrive, err := steadydrive.New(viper.Sub("steadydrive"), ps)
-	if err != nil {
-		log.Fatal().Msgf("steadydrive: %s", err)
+	var steadyDrive *steadydrive.SteadyDrive
+
+	sdConfig := viper.Sub("steadydrive")
+	if sdConfig != nil {
+		steadyDrive, err = steadydrive.New(sdConfig, ps)
+		if err != nil {
+			log.Fatal().Msgf("steadydrive: %s", err)
+		}
 	}
 	positionunit, err := position.NewFromViper(viper.Sub("position"), ps)
 	if err != nil {
@@ -93,9 +98,13 @@ func run(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal().Msgf("triggerunit: %s", err)
 	}
-	sensorunit, err := sensor.NewFromViper(viper.Sub("sensor"), ps, exporter)
-	if err != nil {
-		log.Fatal().Msgf("sensorunit: %s", err)
+	var sensorUnit *sensor.Unit
+	sensorcfg := viper.Sub("sensor")
+	if sensorcfg != nil {
+		sensorUnit, err = sensor.NewFromViper(sensorcfg, ps, exporter)
+		if err != nil {
+			log.Fatal().Msgf("sensorunit: %s", err)
+		}
 	}
 	gnssunit, err := gnss.NewFromViper(viper.Sub("gnss"), ps)
 	if err != nil {
@@ -106,11 +115,15 @@ func run(cmd *cobra.Command, args []string) {
 		log.Fatal().Msgf("metricsunit: %s", err)
 	}
 
-	go steadydrive.Run()
+	if steadyDrive != nil {
+		go steadyDrive.Run()
+	}
 	go positionunit.Run()
 	go triggerunit.Run()
 	gnssunit.Run()
-	sensorunit.Run()
+	if sensorUnit != nil {
+		sensorUnit.Run()
+	}
 	go metricsunit.Run()
 	select {}
 }

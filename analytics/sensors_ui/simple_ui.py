@@ -61,25 +61,49 @@ class SensorsUi(widgets.VBox):
             i += 1
         return map
 
+    def scale_sensor_data(self, s):
+        return (s - 0.6) * 125
+
     def render_sensors(self, df):
         out = self.sensors_out
         with out:
             out.clear_output(wait=True)
             fig, (ax1, ax3, ax4) = plt.subplots(
-                3, sharex=True, sharey=True, figsize=(FIG_SIZE_X, 6)
+                3,
+                sharex=True,
+                sharey=True,
+                figsize=(FIG_SIZE_X, 6),
             )
-            # fig, ax = plt.subplots(figsize=FIG_SIZE)
-            x = list(range(0, df["sensor_data"].shape[0]))
-            l = ax1.plot(x, df["sensor_data"]["sensor0"], label="Z", color="blue")
+            for ax in [ax1, ax3, ax4]:
+                ax1.set_ylim(-2, 2)
+                ax1.autoscale(enable=False, axis="y")
+
+            x = [(4-i) / 1000 for i in range(0, df["sensor_data"].shape[0])]
+            l = ax1.plot(
+                x,
+                self.scale_sensor_data(df["sensor_data"]["sensor0"]),
+                label="Z",
+                color="blue",
+            )
             ax1.legend(loc="upper right")
             # l = ax2.plot(x, df["sensor_data"]["sensor3"], label="Z links")
             # ax2.legend(loc="upper right")
-            l = ax3.plot(x, df["sensor_data"]["sensor1"], label="Y", color="orange")
+            l = ax3.plot(
+                x,
+                self.scale_sensor_data(df["sensor_data"]["sensor1"]),
+                label="Y",
+                color="orange",
+            )
             ax3.legend(loc="upper right")
-            l = ax4.plot(x, df["sensor_data"]["sensor2"], label="X", color="green")
+            l = ax4.plot(
+                x,
+                self.scale_sensor_data(df["sensor_data"]["sensor2"]),
+                label="X",
+                color="green",
+            )
             ax4.legend(loc="upper right")
-            ax4.set_ylabel("Acceleration")
-            ax4.set_xlabel("Time")
+            ax4.set_ylabel("Acceleration (g)")
+            ax4.set_xlabel("Time (s)")
             fig.canvas.header_visible = False
             timestr = df["trigger_time"].strftime("%Y-%m-%d %H:%M:%S")
             fig.suptitle(

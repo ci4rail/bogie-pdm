@@ -2,6 +2,7 @@ apiVersion: core.oam.dev/v1beta1
 kind: Application
 metadata:
   name: bogie-network
+  namespace: bogie
 spec:
   components:
     - type: application-network

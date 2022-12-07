@@ -66,8 +66,9 @@ func run(cmd *cobra.Command, args []string) {
 	nodeID := os.Getenv("NODE_NAME")
 	if globalCfg.NatsAddress != "" {
 		credsPath := ""
-		if globalCfg.NatsCredsPath == "" {
+		if globalCfg.NatsCredsPath != "" {
 			credsPath = fmt.Sprintf("%s/%s.creds", globalCfg.NatsCredsPath, globalCfg.NetworkName)
+			log.Info().Msgf("using nats creds file %s", credsPath)
 		}
 		exporter, err = nats.Connect(globalCfg.NatsAddress, nodeID, credsPath)
 		if err != nil {

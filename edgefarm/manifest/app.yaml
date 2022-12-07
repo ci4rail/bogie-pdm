@@ -2,6 +2,7 @@ apiVersion: core.oam.dev/v1beta1
 kind: Application
 metadata:
   name: bogie
+  namespace: bogie
 spec:
   components:
     - name: bogie-edge
@@ -9,9 +10,9 @@ spec:
       properties:
         runtime:
           - bogie-mc
-        image: ci4rail/bogie-edge:a6
-        name: bogie-edge-container
-        args: ["--config=/config/.bogie-edge-config.yaml"]
+        image: ci4rail/bogie-pdm:pr-2
+        name: bogie
+        args: ["--config=/config/bogie.yaml"]
         #command: ["sh", "-c", "echo Hello && sleep 10000000"]
       traits:
         - type: edge-network-participant
@@ -36,10 +37,10 @@ spec:
                 path: /sys/class/thermal
                 mountPath: /sys/class/thermal
                 readOnly: false
-              # Create with k create cm bogie-config --from-file=../../cmd/bogie-edge/.bogie-edge-config.yaml
-              # Update with k create cm bogie-config --from-file=../../cmd/bogie-edge/.bogie-edge-config.yaml --dry-run -o yaml | kubectl replace -f -
+              # Create with k create -n bogie cm bogie-config --from-file=../../cmd/bogie-edge/.bogie-edge-config.yaml
+              # Update with k create -n bogie cm bogie-config --from-file=../../cmd/bogie-edge/.bogie-edge-config.yaml --dry-run -o yaml | kubectl replace -f -
               # Configuration is available in container under /config/.bogie-edge-config.yaml
               - name: bogie-config
                 type: configMap
-                cmName: bogie-config
+                cmName: bogie
                 mountPath: /config

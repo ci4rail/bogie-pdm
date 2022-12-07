@@ -63,6 +63,7 @@ func run(cmd *cobra.Command, args []string) {
 		log.Fatal().Msgf("unmarshal global config %s", err)
 	}
 	var exporter export.Exporter
+	nodeID := os.Getenv("NODE_NAME")
 	if globalCfg.NatsAddress != "" {
 		credsPath := ""
 		if globalCfg.NatsCredsPath == "" {
@@ -78,7 +79,6 @@ func run(cmd *cobra.Command, args []string) {
 			log.Fatal().Msg("DAPR_GRPC_ADDRESS not set")
 		}
 
-		nodeID := os.Getenv("NODE_NAME")
 		if nodeID == "" {
 			log.Fatal().Msg("NODE_NAME not set")
 		}

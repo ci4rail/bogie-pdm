@@ -40,7 +40,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@97c170d70b5f8bfc77e6b23e68381f217cb64ded
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
@@ -48,8 +48,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}.{{patch}}
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-      - name: Load .env file
-        uses: xom9ikk/dotenv@v1.0.2
 
       - name: Build and push Docker image
         uses: docker/build-push-action@42863b1282f7046f6c1ec9222965bbceafae3bb8

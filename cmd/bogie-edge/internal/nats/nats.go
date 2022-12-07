@@ -2,8 +2,10 @@ package nats
 
 import (
 	"fmt"
+	"time"
 
 	nats "github.com/nats-io/nats.go"
+	"github.com/rs/zerolog/log"
 )
 
 // Connection is the NATS connection
@@ -19,15 +21,28 @@ func Connect(address string, nodeID string, creds string) (*Connection, error) {
 	if creds != "" {
 		options = append(options, nats.UserCredentials(creds))
 	}
-	nc, err := nats.Connect(address, options...)
-	if err != nil {
-		return nil, err
-	}
+	ncChan := make(chan *nats.Conn)
+
+	go func() {
+		for {
+			time.Sleep(time.Second)
+			fmt.Println("try to connect to nats...")
+			nc, err := nats.Connect(address, options...)
+			if err != nil {
+				log.Error().Msgf("failed: %s", err)
+				continue
+			}
+			fmt.Println("success!")
+			ncChan <- nc
+			break
+		}
+	}()
+
+	nc := <-ncChan
 	js, err := nc.JetStream()
 	if err != nil {
 		return nil, err
 	}
-
 	return &Connection{
 		nc:     nc,
 		js:     js,

@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/daprpubsub"
@@ -36,8 +37,9 @@ import (
 )
 
 type gloabalConfiguration struct {
-	NatsAddress string // nats address. If set, publish directly to nats. Otherwise, publish to dapr pubsub
-	NetworkName string // edgefarm network name, required for dapr pubsub
+	NatsAddress   string // nats address. If set, publish directly to nats. Otherwise, publish to dapr pubsub
+	NatsCredsPath string // nats credentials file path
+	NetworkName   string // edgefarm network name, required for dapr pubsub
 }
 
 var (
@@ -62,7 +64,11 @@ func run(cmd *cobra.Command, args []string) {
 	}
 	var exporter export.Exporter
 	if globalCfg.NatsAddress != "" {
-		exporter, err = nats.Connect(globalCfg.NatsAddress)
+		credsPath := ""
+		if globalCfg.NatsCredsPath == "" {
+			credsPath = fmt.Sprintf("%s/%s.creds", globalCfg.NatsCredsPath, globalCfg.NetworkName)
+		}
+		exporter, err = nats.Connect(globalCfg.NatsAddress, nodeID, credsPath)
 		if err != nil {
 			log.Fatal().Msgf("nats: %s", err)
 		}

@@ -1,4 +1,4 @@
-NatsAddress: "nats://leaf-nats.nats:4222"
+NatsAddress: "nats://172.17.0.1:4222"
 NatsCredsPath: /nats-credentials
 NetworkName: bogie-network
 steadydrive:

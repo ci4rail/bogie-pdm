@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/ci4rail/bogie-pdm/cmd/bogie-edge/internal/daprpubsub"
@@ -36,8 +37,9 @@ import (
 )
 
 type gloabalConfiguration struct {
-	NatsAddress string // nats address. If set, publish directly to nats. Otherwise, publish to dapr pubsub
-	NetworkName string // edgefarm network name, required for dapr pubsub
+	NatsAddress   string // nats address. If set, publish directly to nats. Otherwise, publish to dapr pubsub
+	NatsCredsPath string // nats credentials file path
+	NetworkName   string // edgefarm network name, required for dapr pubsub
 }
 
 var (
@@ -61,8 +63,14 @@ func run(cmd *cobra.Command, args []string) {
 		log.Fatal().Msgf("unmarshal global config %s", err)
 	}
 	var exporter export.Exporter
+	nodeID := os.Getenv("NODE_NAME")
 	if globalCfg.NatsAddress != "" {
-		exporter, err = nats.Connect(globalCfg.NatsAddress)
+		credsPath := ""
+		if globalCfg.NatsCredsPath != "" {
+			credsPath = fmt.Sprintf("%s/%s.creds", globalCfg.NatsCredsPath, globalCfg.NetworkName)
+			log.Info().Msgf("using nats creds file %s", credsPath)
+		}
+		exporter, err = nats.Connect(globalCfg.NatsAddress, nodeID, credsPath)
 		if err != nil {
 			log.Fatal().Msgf("nats: %s", err)
 		}
@@ -72,7 +80,6 @@ func run(cmd *cobra.Command, args []string) {
 			log.Fatal().Msg("DAPR_GRPC_ADDRESS not set")
 		}
 
-		nodeID := os.Getenv("NODE_NAME")
 		if nodeID == "" {
 			log.Fatal().Msg("NODE_NAME not set")
 		}

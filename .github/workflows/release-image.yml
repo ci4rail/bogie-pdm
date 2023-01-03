@@ -1,0 +1,63 @@
+name: "release-image"
+
+on:
+  pull_request:
+    branches:
+      - beta
+      - main
+  release:
+    types:
+      - "published"
+
+env:
+  ARCHITECTURES: linux/arm64,linux/amd64
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@d398f07826957cd0a18ea1b059cf1207835e60bc
+        with:
+          username: ${{ secrets.DOCKER_USERNAME}}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@97c170d70b5f8bfc77e6b23e68381f217cb64ded
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{tag}}
+            type=semver,pattern={{major}}.{{minor}}.{{patch}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@42863b1282f7046f6c1ec9222965bbceafae3bb8
+        with:
+          context: .
+          push: true
+          build-args: |
+            NATS_LEAFNODE_REGISTRY_IMAGE=${{ env.NATS_LEAFNODE_REGISTRY_IMAGE }}
+            NATS_LEAFNODE_REGISTRY_VERSION=${{ env.NATS_LEAFNODE_REGISTRY_VERSION }}
+            NATS_SERVER_VERSION=${{ env.NATS_SERVER_VERSION }}
+          platforms: ${{ env.ARCHITECTURES }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

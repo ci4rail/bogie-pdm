@@ -1,0 +1,44 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: dummy-gecko
+spec:
+  components:
+    - name: edge
+      type: edge-worker
+      properties:
+        runtime:
+          - gecko-mc
+        image: ci4rail/bogie-edge:a7
+        name: bogie-edge-container
+        args: ["--config=/config/.dummy-edge-config.yaml"]
+        #command: ["sh", "-c", "echo Hello && sleep 10000000"]
+      traits:
+        - type: edge-network-participant
+          properties:
+            networks:
+              - bogie-network
+        - type: volumes
+          properties:
+            volumes:
+              - name: dbus
+                type: hostPath
+                path: /var/run/dbus
+                mountPath: /var/run/dbus
+                readOnly: false
+              - name: avahi-daemon
+                type: hostPath
+                path: /var/run/avahi-daemon/socket
+                mountPath: /var/run/avahi-daemon/socket
+                readOnly: false
+              - name: thermal
+                type: hostPath
+                path: /sys/class/thermal
+                mountPath: /sys/class/thermal
+                readOnly: false
+              # Create with k create cm bogie-config --from-file=../../cmd/bogie-edge/.dummy-edge-config.yaml
+              # Configuration is available in container under /config/.dummy-edge-config.yaml
+              - name: dummy-config
+                type: configMap
+                cmName: dummy-config1
+                mountPath: /config

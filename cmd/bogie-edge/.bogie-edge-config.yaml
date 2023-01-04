@@ -1,0 +1,42 @@
+NatsAddress: "nats://172.17.0.1:4222"
+NatsCredsPath: /nats-credentials
+NetworkName: bogie-network
+steadydrive:
+  OutputDataRateHz: 1
+  MotionSensor:
+    DeviceAddress: S101-CPU01UC-accel
+    SampleRate: 100
+    FullScale: 4
+    HighPassFilter: true
+    BandwidthRatio: 2
+gnss:
+  GpsdURL: "172.17.0.1:2947"
+position:
+  MaxGnssAge: 20
+triggerUnit:
+  TriggerDuration: 0
+  HoldOff: 10
+  SteadyDrive:
+    # Trigger when any of the measured values are above the configured thresholds
+    CompareType: 1
+    # Vertical, side, forward
+    Max: [0.15, 0.05, 0.05]
+    RMS: [20, 20, 20]
+  Position:
+    MinLat: 0
+    MaxLat: 100
+    MinLon: 0
+    MaxLon: 100
+    MinSpeed: 0
+    MaxSpeed: 200
+sensor:
+  BogieID: 1
+  DeviceAddress:
+    - S101-IOU01-USB-EXT-1-analogInTypeA1
+    - S101-IOU01-USB-EXT-1-analogInTypeA2
+    - S101-IOU01-USB-EXT-2-analogInTypeA1
+    - S101-IOU01-USB-EXT-2-analogInTypeA2
+  SampleRate: 1000
+  RingBufEntries: 4000
+metrics:
+  PublishPeriod: 2

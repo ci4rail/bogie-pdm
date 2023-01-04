@@ -1,0 +1,55 @@
+/*
+Copyright © 2022 Ci4Rail GmbH <engineering@ci4rail.com>
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+
+package metrics;
+option go_package = "metrics/v1";
+
+message Metrics {
+  message SteadyDrive {
+    repeated double max = 1;
+    repeated double rms = 2;
+  }
+  message Position {
+    bool valid = 1;
+    float lat = 2;
+    float lon = 3;
+    float alt = 4;
+    float speed = 5;
+  }
+  message Temperature { float inBox = 1; }
+  message Internet { bool connected = 1; }
+  message Cellular {
+    string operator = 1;
+    float strength = 2;
+  }
+  message GnssRaw {
+    float lat = 1;
+    float lon = 2;
+    float alt = 3;
+    float speed = 4;
+    float eph = 5;
+    int32 mode = 6;
+    int32 numsats = 7;
+  }
+
+  google.protobuf.Timestamp ts = 1;
+
+  SteadyDrive steady_drive = 2;
+  Position position = 3;
+  Temperature temperature = 4;
+  Internet internet = 5;
+  Cellular cellular = 6;
+  GnssRaw gnss_raw = 7;
+}

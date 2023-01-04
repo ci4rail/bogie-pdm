@@ -1,0 +1,6 @@
+nats-py==2.1.7
+ipywidgets
+plotly
+numpy
+pandas
+colour

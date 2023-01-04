@@ -1,0 +1,24 @@
+#NatsAddress: "localhost:4222"
+NetworkName: bogie-network
+gnss:
+  GpsdURL: "172.17.0.1:2947"
+position:
+  MaxGnssAge: 20
+triggerUnit:
+  TriggerDuration: 0
+  HoldOff: 10
+  SteadyDrive:
+    # Trigger when any of the measured values are above the configured thresholds
+    CompareType: 1
+    # Vertical, side, forward
+    Max: [0.15, 0.05, 0.05]
+    RMS: [20, 20, 20]
+  Position:
+    MinLat: 0
+    MaxLat: 100
+    MinLon: 0
+    MaxLon: 100
+    MinSpeed: 0
+    MaxSpeed: 200
+metrics:
+  PublishPeriod: 2

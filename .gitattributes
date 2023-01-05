@@ -1,0 +1,2 @@
+edgefarm/manifest/bogie_app.yaml filter=git-crypt diff=git-crypt
+edgefarm/manifest/ngs0004_customer.creds filter=git-crypt diff=git-crypt

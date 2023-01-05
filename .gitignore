@@ -13,10 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
 bin/
 exp/
 
 *.pyc
 *.csv
 __pycache__/
-*.creds

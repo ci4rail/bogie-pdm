@@ -59,7 +59,44 @@ On edge device
 docker cp bogie-edge-static 84f3e32205d2:/
 ```
 
-On devpc:
+On devpc: k exec???
 ```
 /bogie-edge-static --config=/config/.bogie-edge-config.yaml
 ```
+
+# Using edgefarm
+
+Here: Devcluster in linode
+
+```
+export KUBECONFIG=~/.kube/linode.cfg
+kubectl ns bogie
+```
+
+Deploy app
+```
+kubectl apply -f manifests/bogie_app.yaml
+```
+
+Delete app (Delete also if config maps are changed!)
+```
+kubectl delete -f manifests/bogie_app.yaml
+```
+
+
+# Monitoring device
+
+Get grafana password
+```
+kubectl get secrets -n monitoring grafana -o jsonpath="{.data.admin-password}" | base64 -d
+```
+
+Forward grafana port
+
+For WSL users: Won't work in WSL. Do it on windows host.
+```
+kubectl port-forward -n monitoring svc/grafana 8080:80
+```
+
+Open grafana in browser: http://localhost:8080
+Login with user `admin` and password from above.

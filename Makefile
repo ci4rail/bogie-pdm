@@ -6,7 +6,7 @@ GO_LDFLAGS = -tags 'netgo osusergo static_build' -ldflags "-X github.com/ci4rail
 
 container:
 	docker buildx build --build-arg VERSION=${VERSION} -f Dockerfile \
-		--platform {CONTAINER_ARCHS} --push -t ci4rail/bogie-edge:${VERSION} .
+		--platform ${CONTAINER_ARCHS} --push -t ci4rail/bogie-pdm:${VERSION} .
 
 bogie-edge-static:
 	GOOS=linux GOARCH=${ARCH} go build $(GO_LDFLAGS) -o ./bin/bogie-edge-static ./cmd/bogie-edge/main.go

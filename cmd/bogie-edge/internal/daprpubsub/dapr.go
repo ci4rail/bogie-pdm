@@ -4,8 +4,10 @@ package daprpubsub
 import (
 	"context"
 	"fmt"
+	"time"
 
 	dapr "github.com/dapr/go-sdk/client"
+	"github.com/rs/zerolog/log"
 )
 
 // Connection is the DAPR connection
@@ -17,9 +19,15 @@ type Connection struct {
 
 // New creates a new instance of DaprPubSub
 func New(address string, nodeID string, networkName string) (*Connection, error) {
-	client, err := dapr.NewClientWithAddress(address)
-	if err != nil {
-		return nil, err
+	var client dapr.Client
+	var err error
+	for {
+		client, err = dapr.NewClientWithAddress(address)
+		if err == nil {
+			break
+		}
+		log.Warn().Msgf("dapr client: %s, retrying...", err)
+		time.Sleep(2 * time.Second)
 	}
 
 	return &Connection{

@@ -66,6 +66,9 @@ On devpc: k exec???
 
 # Using edgefarm
 
+Repo contains git-crypted secrets. To decrypt them, you need to have the key: https://vault.bitwarden.com/#/vault?itemId=3715f6a1-95b0-4e44-bf22-af8100ed2d05
+Store attachment as `../bogie-pdm-git-crypt-key` and run `git-crypt unlock ../bogie-pdm-git-crypt-key`
+
 Here: Devcluster in linode
 
 ```
@@ -100,3 +103,12 @@ kubectl port-forward -n monitoring svc/grafana 8080:80
 
 Open grafana in browser: http://localhost:8080
 Login with user `admin` and password from above.
+
+
+# Get data from nats
+
+```bash
+nats context create ngs004 --server connect.ngs.global  --creds edgefarm/manifest/ngs0004_customer.creds
+nats context select ngs004
+nats stream ls
+```

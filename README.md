@@ -108,7 +108,7 @@ Login with user `admin` and password from above.
 # Get data from nats
 
 ```bash
-nats context create ngs004 --server connect.ngs.global  --creds edgefarm/manifest/ngs0004_customer.creds
+nats context create ngs004 --server connect.ngs.global  --creds ~/work/bogie-pdm/edgefarm/manifest/ngs0004_customer.creds
 nats context select ngs004
 nats stream ls
 ```

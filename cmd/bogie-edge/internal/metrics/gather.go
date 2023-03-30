@@ -14,6 +14,7 @@ import (
 
 type metricsData struct {
 	mutex       *sync.Mutex
+	updates     int
 	steadydrive *steadydrive.OutputData
 	position    *position.OutputData
 	modem       *modemData
@@ -42,9 +43,15 @@ func (m *Unit) Run() {
 		for {
 			time.Sleep(time.Duration(m.cfg.PublishPeriod) * time.Second)
 			metr.mutex.Lock()
+			updates := metr.updates
+			metr.updates = 0
 			o := m.publishData(metr)
 			metr.mutex.Unlock()
 
+			if updates == 0 {
+				// If this happens, better restart application
+				m.logger.Fatal().Msgf("No updates received for %d seconds", m.cfg.PublishPeriod)
+			}
 			err := m.export.PubExport("metrics", o)
 			if err != nil {
 				m.logger.Error().Msgf("can't publish %v", err)
@@ -68,10 +75,11 @@ func (m *Unit) Run() {
 		case gnss.OutputData:
 			metr.gnssraw = &m
 		}
+		metr.updates++
 		metr.mutex.Unlock()
 		//m.logger.Debug().Msgf("msg %+v", metr)
 	}
-
+	m.logger.Fatal().Msgf("left channel loop")
 }
 
 func (m *Unit) publishData(metrics *metricsData) []byte {

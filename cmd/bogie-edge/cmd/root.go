@@ -56,7 +56,7 @@ var rootCmd = &cobra.Command{
 
 func run(cmd *cobra.Command, args []string) {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: "15:04:05.999Z07:00"})
-	ps := pubsub.New(10)
+	ps := pubsub.New(100)
 
 	err := viper.Unmarshal(&globalCfg)
 	if err != nil {

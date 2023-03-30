@@ -139,12 +139,12 @@ func (t *TriggerUnit) isSteadyDriveOk(sd *steadydrive.OutputData) bool {
 	for ax := 0; ax < 3; ax++ {
 		if t.cfg.SteadyDrive.CompareType == 0 {
 			if sd.Max[ax] > t.cfg.SteadyDrive.Max[ax] || sd.RMS[ax] > t.cfg.SteadyDrive.RMS[ax] {
-				t.logger.Debug().Msgf("max/rms ax:%d %f %f", ax, sd.Max[ax], sd.RMS[ax])
+				//t.logger.Debug().Msgf("max/rms ax:%d %f %f", ax, sd.Max[ax], sd.RMS[ax])
 				return false
 			}
 		} else if t.cfg.SteadyDrive.CompareType == 1 {
 			if sd.Max[ax] > t.cfg.SteadyDrive.Max[ax] || sd.RMS[ax] > t.cfg.SteadyDrive.RMS[ax] {
-				t.logger.Debug().Msgf("max/rms ax:%d %f %f", ax, sd.Max[ax], sd.RMS[ax])
+				//t.logger.Debug().Msgf("max/rms ax:%d %f %f", ax, sd.Max[ax], sd.RMS[ax])
 				return true
 			}
 		} else {

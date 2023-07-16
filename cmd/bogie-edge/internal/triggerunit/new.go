@@ -9,6 +9,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+type geoFence struct {
+	MinLat   float64 // minimum latitude
+	MaxLat   float64 // maximum latitude
+	MinLon   float64 // minimum longitude
+	MaxLon   float64 // maximum longitude
+	MinSpeed float64 // minimum speed
+	MaxSpeed float64 // maximum speed
+}
+
 type configuration struct {
 	TriggerDuration float64 // time how long the trigger condition must be met until we trigger. In seconds
 	HoldOff         float64 // time how long we wait after trigger before we trigger again. In seconds
@@ -17,14 +26,7 @@ type configuration struct {
 		Max         [3]float64
 		RMS         [3]float64
 	}
-	Position struct {
-		MinLat   float64 // minimum latitude
-		MaxLat   float64 // maximum latitude
-		MinLon   float64 // minimum longitude
-		MaxLon   float64 // maximum longitude
-		MinSpeed float64 // minimum speed
-		MaxSpeed float64 // maximum speed
-	}
+	GeoFence []geoFence
 }
 
 // TriggerUnit is the instance of the TriggerUnit

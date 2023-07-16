@@ -22,13 +22,13 @@ triggerUnit:
     # Vertical, side, forward
     Max: [0.15, 0.05, 0.05]
     RMS: [20, 20, 20]
-  Position:
-    MinLat: 0
-    MaxLat: 100
-    MinLon: 0
-    MaxLon: 100
-    MinSpeed: 0
-    MaxSpeed: 200
+  Geofence:
+    - MinLat: 0
+      MaxLat: 100
+      MinLon: 0
+      MaxLon: 100
+      MinSpeed: 0
+      MaxSpeed: 200
 sensor:
   BogieID: 1
   DeviceAddress:

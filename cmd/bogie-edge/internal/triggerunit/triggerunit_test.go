@@ -32,14 +32,14 @@ func TestTriggerUnit(t *testing.T) {
 		TriggerDuration: 3,
 		HoldOff:         5,
 	}
+	cfg.SteadyDrive.CompareType = 0
 	cfg.SteadyDrive.Max = [3]float64{1, 2, 3}
 	cfg.SteadyDrive.RMS = [3]float64{4, 5, 7}
-	cfg.Position.MinLat = -30
-	cfg.Position.MaxLat = 30
-	cfg.Position.MinLon = -120
-	cfg.Position.MaxLon = 120
-	cfg.Position.MinSpeed = 80
-	cfg.Position.MaxSpeed = 100
+
+	cfg.GeoFence = []geoFence{
+		{MinLat: -10, MaxLat: -8, MinLon: -110, MaxLon: -100, MinSpeed: 80, MaxSpeed: 100},
+		{MinLat: 40, MaxLat: 41, MinLon: 50, MaxLon: 60, MinSpeed: 60, MaxSpeed: 70},
+	}
 
 	tu := New(cfg, ps)
 
@@ -73,6 +73,26 @@ func TestTriggerUnit(t *testing.T) {
 	}
 	time.Sleep(time.Millisecond * 100)
 	// after holdoff, we should trigger again
+	assert.NotEmpty(ch, "trigger")
+	eatTrigger(ch)
+
+	// leave any geo fence
+	for i := 0; i < 8; i++ {
+		assert.Empty(ch, "no trigger")
+		ps.Pub(steadydrive.OutputData{Timestamp: time.Now(), Max: [3]float64{1, 1, 1}, RMS: [3]float64{1, 1, 1}}, sdTopic)
+		ps.Pub(position.OutputData{Timestamp: time.Now(), Valid: true, Lat: 0, Lon: 0, Speed: 81}, posTopic)
+		time.Sleep(time.Millisecond * 1000)
+	}
+	assert.Empty(ch, "no trigger")
+
+	// enter second geo fence
+	for i := 0; i < 3; i++ {
+		assert.Empty(ch, "no trigger")
+		ps.Pub(steadydrive.OutputData{Timestamp: time.Now(), Max: [3]float64{1, 1, 1}, RMS: [3]float64{1, 1, 1}}, sdTopic)
+		ps.Pub(position.OutputData{Timestamp: time.Now(), Valid: true, Lat: 40, Lon: 60, Speed: 60}, posTopic)
+		time.Sleep(time.Millisecond * 1000)
+	}
+	time.Sleep(time.Millisecond * 100)
 	assert.NotEmpty(ch, "trigger")
 	eatTrigger(ch)
 

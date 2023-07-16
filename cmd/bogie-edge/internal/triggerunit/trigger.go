@@ -165,13 +165,14 @@ func (t *TriggerUnit) isPositionOk(p *position.OutputData) bool {
 	if !p.Valid {
 		return false
 	}
-	if p.Lat < t.cfg.Position.MinLat || p.Lat > t.cfg.Position.MaxLat ||
-		p.Lon < t.cfg.Position.MinLon || p.Lon > t.cfg.Position.MaxLon {
-		return false
-	}
-	if p.Speed < t.cfg.Position.MinSpeed || p.Speed > t.cfg.Position.MaxSpeed {
-		return false
-	}
 
-	return true
+	// check if position is inside one of the geo fences
+	for _, gf := range t.cfg.GeoFence {
+		if p.Lat >= gf.MinLat && p.Lat <= gf.MaxLat &&
+			p.Lon >= gf.MinLon && p.Lon <= gf.MaxLon &&
+			p.Speed >= gf.MinSpeed && p.Speed <= gf.MaxSpeed {
+			return true
+		}
+	}
+	return false
 }

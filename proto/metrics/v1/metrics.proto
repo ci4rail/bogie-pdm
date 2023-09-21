@@ -33,6 +33,7 @@ message Metrics {
   message Cellular {
     string operator = 1;
     float strength = 2;
+    string cellid = 3;
   }
   message GnssRaw {
     float lat = 1;

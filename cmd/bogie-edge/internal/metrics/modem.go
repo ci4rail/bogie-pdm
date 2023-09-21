@@ -9,6 +9,7 @@ import (
 type modemData struct {
 	OperatorName  string
 	SignalQuality float32
+	CellId        string
 }
 
 func (m *Unit) runModem() {
@@ -37,6 +38,19 @@ func (m *Unit) runModem() {
 				continue
 			}
 
+			location, err := modem.GetLocation()
+			if err != nil {
+				m.logger.Error().Err(err).Msg("get location")
+				continue
+			}
+
+			currentLocation, err := location.GetCurrentLocation()
+			if err != nil {
+				m.logger.Error().Err(err).Msg("get current location")
+				continue
+			}
+			Ci := currentLocation.ThreeGppLacCi.Ci
+
 			signalQuality, _, err := modem.GetSignalQuality()
 			if err != nil {
 				m.logger.Error().Err(err).Msg("get signal quality")
@@ -45,6 +59,7 @@ func (m *Unit) runModem() {
 			m.ps.Pub(modemData{
 				OperatorName:  opName,
 				SignalQuality: float32(signalQuality),
+				CellId:        Ci,
 			}, "cellular")
 			break // only one modem for now
 		}

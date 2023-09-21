@@ -117,6 +117,7 @@ func (m *Unit) publishData(metrics *metricsData) []byte {
 		mpb.Cellular = &pb.Metrics_Cellular{
 			Operator: metrics.modem.OperatorName,
 			Strength: metrics.modem.SignalQuality,
+			Cellid:   metrics.modem.CellId,
 		}
 	}
 	if metrics.gnssraw != nil {
